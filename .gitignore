@@ -1,0 +1,32 @@
+# Dependencies (pnpm reinstalls these from the lockfile)
+node_modules/
+
+# Build output
+dist/
+.output/
+.vinxi/
+.tanstack/
+
+# Local SQLite database files
+*.db
+*.db-journal
+
+# Test reports
+coverage/
+playwright-report/
+test-results/
+
+# Environment variables (may contain secrets)
+.env
+.env.*
+!.env.example
+
+# Logs and OS / editor clutter
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Personal Claude Code settings (not shared)
+.claude/settings.local.json
