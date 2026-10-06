@@ -9,5 +9,10 @@
     "node": ">=24",
     "pnpm": ">=11"
   },
-  "scripts": {}
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
 }

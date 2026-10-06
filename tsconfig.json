@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    // Which JavaScript features we write, and which built-in types exist.
+    // DOM types are there because most of this app runs in the browser.
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+
+    // Vite bundles our code, so TypeScript only checks types and never writes .js files.
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+
+    // Strictness. `strict` is already the default in TS 6, but we spell it out.
+    "strict": true,
+    // `arr[0]` has type `T | undefined`, because the array might be empty.
+    "noUncheckedIndexedAccess": true,
+    // Type-only imports must say `import type`, so it's clear what is erased at build time.
+    "verbatimModuleSyntax": true,
+
+    // Don't type-check the .d.ts files inside node_modules (faster, and not our code).
+    "skipLibCheck": true,
+
+    // `import { x } from "~/lib/x"` instead of "../../../lib/x".
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
+}
