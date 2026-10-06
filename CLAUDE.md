@@ -13,7 +13,8 @@ The user wants to follow along and understand every line, so the pace matters mo
 - Explain what the step adds and why, then write the code with short files and comments only where they teach something.
 - Build things by hand. Don't use scaffolders that generate code the user hasn't seen explained.
 - Before installing packages, check their current versions and docs, because TanStack Start changes quickly.
-- Run a check that shows the step works (a command's output, a type error appearing, the page in the browser).
+- Add the step's test along with its code (see the *Test:* note on the step; write it first for pure functions). Keep server logic in plain functions so it can be tested against an in-memory database. Once Playwright exists (step 13), add or extend an e2e test whenever a step changes something a user can see or do.
+- Run a check that shows the step works (a command's output, a type error appearing, the page in the browser), plus `pnpm test` once it exists.
 - Walk through the key lines, tick the step in `docs/PLAN.md`, and commit everything as `step NN: <short title>`.
 - Stop and wait for the user's questions or "next".
 
