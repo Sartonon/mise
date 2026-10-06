@@ -1,0 +1,5 @@
+# pnpm 11 reads its settings from this file (.npmrc is only for auth/registry).
+# This repo is a single package, so there is no `packages:` list.
+
+# Refuse to install dependencies whose `engines` say they don't support our Node.
+engineStrict: true

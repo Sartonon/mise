@@ -27,7 +27,7 @@ Wherever possible we build things by hand instead of using a scaffolder, so that
 
 ## Phase A — Repository foundation
 - [x] 1. **Git and the basics:** run `git init`, then add `.gitignore`, `.editorconfig`, `.nvmrc` (24) and a stub `README.md`. *Learn: why each file exists.*
-- [ ] 2. **pnpm package:** add a minimal `package.json` (`"type": "module"`, `packageManager`, `engines`) and `.npmrc` (`engine-strict`). *Learn: what pnpm does differently (content-addressed store, strict `node_modules`, lockfile).*
+- [x] 2. **pnpm package:** add a minimal `package.json` (`"type": "module"`, `packageManager`, `engines`) and `pnpm-workspace.yaml` (`engineStrict: true`). *(Updated: pnpm 11 only reads auth/registry settings from `.npmrc`, so other settings go in `pnpm-workspace.yaml`.)* *Learn: what pnpm does differently (content-addressed store, strict `node_modules`, lockfile).*
 - [ ] 3. **TypeScript:** install `typescript`, write a strict `tsconfig.json` (`noUncheckedIndexedAccess`, `verbatimModuleSyntax`, path alias `~/*`) and add a `typecheck` script. Add a tiny `src/hello.ts` to see type errors in action, then delete it.
 
 ## Phase B — Code quality tooling
