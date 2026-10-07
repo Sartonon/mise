@@ -4,6 +4,8 @@ node_modules/
 # Build output
 dist/
 .output/
+# Vercel's build output (written by `vite build` with VERCEL=1)
+.vercel/
 .vinxi/
 .tanstack/
 
