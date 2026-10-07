@@ -6,6 +6,8 @@ dist/
 .output/
 .vinxi/
 .tanstack/
+# Vercel build output (Nitro writes it when the VERCEL env var is set)
+.vercel/
 
 # Local SQLite database files
 *.db

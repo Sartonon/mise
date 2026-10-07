@@ -9,7 +9,7 @@ import tseslint from "typescript-eslint";
 export default defineConfig(
   // Files ESLint never looks at. Unlike Prettier, ESLint doesn't read .gitignore,
   // so build output has to be listed here too.
-  globalIgnores(["dist/", ".output/", "src/routeTree.gen.ts"]),
+  globalIgnores(["dist/", ".output/", ".vercel/", "src/routeTree.gen.ts"]),
 
   // ESLint's own recommended rules for plain JavaScript mistakes.
   js.configs.recommended,
