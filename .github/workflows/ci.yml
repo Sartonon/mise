@@ -31,5 +31,7 @@ jobs:
       # lockfile disagree, fail instead of quietly updating the lockfile.
       - run: pnpm install --frozen-lockfile
 
+      # Fails if any file isn't formatted the way Prettier would format it.
+      - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm test

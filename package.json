@@ -12,11 +12,14 @@
   "scripts": {
     "typecheck": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@types/node": "^24.19.1",
     "@typescript/native": "npm:typescript@^7.0.2",
+    "prettier": "^3.9.9",
     "typescript": "npm:@typescript/typescript6@~6.0.2",
     "vite": "^8.3.2",
     "vitest": "^5.0.3"
