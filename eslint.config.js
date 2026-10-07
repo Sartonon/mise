@@ -1,12 +1,16 @@
 import js from "@eslint/js";
 import vitest from "@vitest/eslint-plugin";
-import { defineConfig } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 import tseslint from "typescript-eslint";
 
 // A "flat config": a list of config objects. For each file, ESLint merges every
 // object whose `files` match it (an object with no `files` applies to all files).
 export default defineConfig(
+  // Files that tools write, which we don't lint: the build output, and the route
+  // tree that TanStack Router generates (its header asks us to exclude it).
+  globalIgnores(["dist/", ".output/", "src/routeTree.gen.ts"]),
+
   // ESLint's own recommended rules for plain JavaScript mistakes.
   js.configs.recommended,
 
