@@ -9,6 +9,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
+    // Turn JSX (<h1>Hi</h1>) into React's function calls, without `import React` in every file.
+    "jsx": "react-jsx",
 
     // Strictness. `strict` is already the default in TS 6, but we spell it out.
     "strict": true,
