@@ -34,4 +34,5 @@ Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're ad
 - `pnpm format`: format every file with Prettier
 - `pnpm format:check`: fail if any file isn't formatted (CI runs this)
 - `pnpm lint`: run ESLint, including the rules that use type information
-- `pnpm prepare`: install the git hooks (runs automatically on `pnpm install`). The pre-commit hook runs lint-staged: `eslint --fix`, `prettier --write` and `vitest related` on the staged files
+- `pnpm lint:secrets`: scan every file (except those in `.gitignore`) for tokens, keys and passwords (CI runs this)
+- `pnpm prepare`: install the git hooks (runs automatically on `pnpm install`). The pre-commit hook runs lint-staged: `secretlint` on every staged file, plus `eslint --fix`, `prettier --write` and `vitest related` on the staged files

@@ -31,6 +31,8 @@ jobs:
       # lockfile disagree, fail instead of quietly updating the lockfile.
       - run: pnpm install --frozen-lockfile
 
+      # Fails if any file contains something that looks like a secret (token, key, password).
+      - run: pnpm lint:secrets
       # Fails if any file isn't formatted the way Prettier would format it.
       - run: pnpm format:check
       - run: pnpm lint

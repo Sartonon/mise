@@ -3,6 +3,9 @@
 
 /** @type {import("lint-staged").Configuration} */
 export default {
+  // Every staged file: block the commit if it contains something that looks like a secret.
+  // It only reads files, so it can safely run at the same time as the tasks below.
+  "*": "secretlint",
   // Code: fix lint problems, then format, then run the tests that import these files.
   // An array runs in order, so the two fixers never edit the same file at once.
   "*.{js,ts,tsx}": [
