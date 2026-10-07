@@ -49,7 +49,7 @@ Wherever possible we build things by hand instead of using a scaffolder, so that
 ## Phase B — Code quality tooling
 
 - [x] 7. **Prettier:** add `prettier.config.js`, `.prettierignore`, and `format` and `format:check` scripts. Add `format:check` to CI. _(Prettier also formats Markdown, so the first `pnpm format` restyled `CLAUDE.md` and this file: blank lines after headings, `_` for italics.)_
-- [ ] 8. **ESLint base:** a flat config `eslint.config.js` using `@eslint/js` and `typescript-eslint` (type-checked rules), plus a `lint` script. Add `@vitest/eslint-plugin` for test files. Add `lint` to CI.
+- [x] 8. **ESLint base:** a flat config `eslint.config.js` using `@eslint/js` and `typescript-eslint` (type-checked rules), plus a `lint` script. Add `@vitest/eslint-plugin` for test files. Add `lint` to CI. _(Installed ESLint 10 and typescript-eslint 8.71, which supports TypeScript `<6.1`. That is why step 3 kept the TS 6 API under the `typescript` name. The `.js` config files aren't in `tsconfig.json`, so they're linted without type information.)_
 - [ ] 9. **ESLint and Prettier together:** add `eslint-config-prettier`. _Learn: why linting and formatting are kept separate._ (The React and TanStack lint plugins come later, when we have that code.)
 - [ ] 10. **Git hooks:** Husky with a `pre-commit` hook that runs lint-staged (format, lint, and `vitest related --run` for the changed files). We'll make a deliberately badly formatted commit to watch the hook fix it, and a commit with a broken test to watch it get blocked. _Learn: the hook is a fast local check, and CI is the one that can't be skipped._
 
