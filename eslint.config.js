@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import vitest from "@vitest/eslint-plugin";
 import { defineConfig } from "eslint/config";
+import eslintConfigPrettier from "eslint-config-prettier/flat";
 import tseslint from "typescript-eslint";
 
 // A "flat config": a list of config objects. For each file, ESLint merges every
@@ -33,4 +34,8 @@ export default defineConfig(
     files: ["**/*.test.ts"],
     extends: [vitest.configs.recommended],
   },
+
+  // Must stay last: turns off every rule above that is about formatting,
+  // because Prettier decides formatting. ESLint only looks for bugs.
+  eslintConfigPrettier,
 );
