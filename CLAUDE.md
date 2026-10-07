@@ -18,7 +18,7 @@ The user wants to follow along and understand every line, so the pace matters mo
 - Add the step's test along with its code (see the _Test:_ note on the step; write it first for pure functions). Keep server logic in plain functions so it can be tested against an in-memory database. Once Playwright exists (step 16), add or extend an e2e test whenever a step changes something a user can see or do.
 - Run a check that shows the step works (a command's output, a type error appearing, the page in the browser), plus `pnpm test` once it exists.
 - Walk through the key lines, tick the step in `docs/PLAN.md`, and commit everything as `step NN: <short title>`.
-- Once the GitHub repo exists (step 4), push after each step's commit. Once CI exists (step 6), check that it's green; once Vercel is set up (step 14), check the deploy too. When a step adds a new check (format, lint, build, e2e), add it to CI in the same step.
+- Once the GitHub repo exists (step 4), push each step's commit to a branch and open a pull request into `main` titled like the commit. The user merges it. Once CI exists (step 6), check that it's green on the pull request (CI doesn't run on branch pushes without one); once Vercel is set up (step 14), check the deploy too. When a step adds a new check (format, lint, build, e2e), add it to CI in the same step.
 - The user creates and signs in to accounts (GitHub, Vercel, Turso) themselves. Never handle their passwords or tokens, and never commit secrets.
 - Stop and wait for the user's questions or "next".
 
@@ -28,6 +28,9 @@ If something in the plan turns out to be wrong or outdated, explain it to the us
 
 Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're added.
 
+- `pnpm dev`: start the dev server with hot reload (http://localhost:5173)
+- `pnpm build`: build the app for production into `dist/` (CI runs this)
+- `pnpm start`: serve the production build from `dist/` (run `pnpm build` first)
 - `pnpm typecheck`: type-check everything with `tsc` (TypeScript 7)
 - `pnpm test`: run the Vitest tests once
 - `pnpm test:watch`: rerun the tests whenever a file changes
