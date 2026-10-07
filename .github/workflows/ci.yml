@@ -1,0 +1,37 @@
+name: CI
+
+# When to run: on pushes to main, and on every pull request.
+# (Pull request branches aren't listed under `push` too, or each push would run CI twice.)
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The workflow's GitHub token may only read the repo. Safer if a dependency misbehaves.
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Installs the pnpm version named in package.json's `packageManager`.
+      - uses: pnpm/action-setup@v6
+
+      # Installs the Node version from .nvmrc, and caches pnpm's store
+      # (keyed on pnpm-lock.yaml) so later runs download less.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # Install exactly what the lockfile says. If package.json and the
+      # lockfile disagree, fail instead of quietly updating the lockfile.
+      - run: pnpm install --frozen-lockfile
+
+      # Fails if any file isn't formatted the way Prettier would format it.
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm test

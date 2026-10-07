@@ -1,0 +1,3 @@
+# Prettier already skips everything in .gitignore and node_modules.
+# These are tracked in git but written by tools, so we don't reformat them.
+pnpm-lock.yaml
