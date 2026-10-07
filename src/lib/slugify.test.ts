@@ -18,6 +18,11 @@ describe("slugify", () => {
     expect(slugify("  ...Pancakes!  ")).toBe("pancakes");
   });
 
+  // DEMO: a deliberately wrong expectation, to watch CI go red. Reverted next.
+  it("keeps spaces (wrong on purpose)", () => {
+    expect(slugify("Tomato Soup")).toBe("tomato soup");
+  });
+
   it("returns an empty string when nothing is left", () => {
     expect(slugify("!!!")).toBe("");
   });
