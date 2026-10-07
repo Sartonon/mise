@@ -28,6 +28,9 @@ If something in the plan turns out to be wrong or outdated, explain it to the us
 
 Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're added.
 
+- `pnpm dev`: start the dev server with hot reload (http://localhost:5173)
+- `pnpm build`: build the app for production into `dist/` (CI runs this)
+- `pnpm start`: serve the production build from `dist/` (run `pnpm build` first)
 - `pnpm typecheck`: type-check everything with `tsc` (TypeScript 7)
 - `pnpm test`: run the Vitest tests once
 - `pnpm test:watch`: rerun the tests whenever a file changes
