@@ -33,5 +33,6 @@ jobs:
 
       # Fails if any file isn't formatted the way Prettier would format it.
       - run: pnpm format:check
+      - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
