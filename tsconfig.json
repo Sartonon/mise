@@ -27,5 +27,8 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  // Build output isn't our code. Setting `exclude` replaces TypeScript's default,
+  // so node_modules has to be listed again.
+  "exclude": ["node_modules", "dist", ".output", ".vercel"]
 }

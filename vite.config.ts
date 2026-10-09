@@ -13,8 +13,9 @@ export default defineConfig({
     // It must come before the React plugin, because it rewrites our code first.
     tanstackStart(),
     // Nitro: wraps Start's server bundle into a server for a specific host.
-    // It picks the host on its own: on Vercel it writes `.vercel/output`,
-    // anywhere else a plain Node.js server in `.output/`.
+    // It detects the host from environment variables: on Vercel (`VERCEL` is set)
+    // it writes `.vercel/output`. When it finds no known host, as on our machines
+    // and in CI, it writes a plain Node.js server to `.output/`.
     nitro(),
     // React: compiles JSX, and updates components in the browser without a full reload.
     viteReact(),
