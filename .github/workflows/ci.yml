@@ -47,9 +47,15 @@ jobs:
       - id: install
         run: pnpm install --frozen-lockfile
 
-      # Normally a failed step skips every step after it, so a formatting error would hide
-      # whether lint and the tests pass. This `if` runs each check anyway, so one run reports
-      # every problem. They still need a successful install, and stop if the run is cancelled.
+      # Each check below has the same `if`. Without one, a step gets the default
+      # `if: success()`: run only if every step before it succeeded. So a formatting error
+      # would skip lint, typecheck and the tests, and hide whether they pass. Instead:
+      # - `!cancelled()` runs the step even after an earlier check failed (but not after
+      #   someone cancels the run, or a newer push cancels it).
+      # - `steps.install.outcome == 'success'` still skips it when the install failed
+      #   (`id: install` above names that step), since nothing can run without packages.
+      # Any failed check still fails the job: the `if` only decides whether a step runs.
+
       # Fails if any file contains something that looks like a secret (token, key, password).
       - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm lint:secrets
