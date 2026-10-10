@@ -8,8 +8,9 @@ export default {
   '*': 'secretlint',
   // Code: fix lint problems, then format, then run the tests that import these files.
   // An array runs in order, so the two fixers never edit the same file at once.
+  // --max-warnings 0: a warning blocks the commit too, the same as in CI.
   '*.{js,ts,tsx}': [
-    'eslint --fix',
+    'eslint --fix --max-warnings 0',
     'prettier --write',
     // --passWithNoTests: a staged file that no test imports is fine.
     'vitest related --run --passWithNoTests',
