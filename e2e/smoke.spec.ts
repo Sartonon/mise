@@ -9,3 +9,14 @@ test('the home page says hello', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Hello, Mise' })).toBeVisible()
   await expect(page).toHaveTitle(/Mise/)
 })
+
+test('the favicons are linked and served', async ({ page, request }) => {
+  await page.goto('/')
+
+  for (const href of ['/favicon.ico', '/favicon.svg']) {
+    await expect(page.locator(`head link[rel="icon"][href="${href}"]`)).toHaveCount(1)
+    // `request` makes plain HTTP requests, without the browser: quick for checking files.
+    const response = await request.get(href)
+    expect(response.status()).toBe(200)
+  }
+})

@@ -1,5 +1,6 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 import { NavBar } from '~/components/NavBar'
+import { NotFound } from '~/components/NotFound'
 
 // The root route wraps every page. Because Start renders on the server,
 // it owns the whole HTML document, not just a <div id="root">.
@@ -11,8 +12,17 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'Mise' },
     ],
+    // Files in public/ are served from the site root as they are.
+    // Browsers that support SVG icons use the sharp SVG; older ones fall back to the .ico.
+    links: [
+      { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+      { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+    ],
   }),
   component: RootDocument,
+  // Rendered inside RootDocument in place of the page, so the nav bar stays.
+  // Without it, the router warns and shows a bare <p>Not Found</p>.
+  notFoundComponent: NotFound,
 })
 
 function RootDocument() {

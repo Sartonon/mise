@@ -28,13 +28,13 @@ If something in the plan turns out to be wrong or outdated, explain it to the us
 
 Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're added.
 
-- `pnpm dev`: start the dev server with hot reload (http://localhost:5173)
+- `pnpm dev`: start the dev server with hot reload (http://localhost:3000)
 - `pnpm build`: build the app for production into `.output/` (CI runs this). On Vercel (where `VERCEL` is set) it writes `.vercel/output/` instead
 - `pnpm start`: run the production server from `.output/` with Node (run `pnpm build` first)
 - `pnpm typecheck`: type-check everything with `tsc` (TypeScript 7)
 - `pnpm test`: run the Vitest tests once
 - `pnpm test:watch`: rerun the tests whenever a file changes
-- `pnpm test:e2e`: build the app, start it on port 3000 and run the Playwright tests in `e2e/` (CI runs this). The first time, run `pnpm exec playwright install chromium`
+- `pnpm test:e2e`: run the Playwright tests in `e2e/` against a dev server on port 3100. `CI=1 pnpm test:e2e` builds and tests the production server instead, as CI does. The first time, run `pnpm exec playwright install chromium`
 - `pnpm format`: format every file with Prettier
 - `pnpm format:check`: fail if any file isn't formatted (CI runs this)
 - `pnpm lint`: run ESLint, including the rules that use type information
