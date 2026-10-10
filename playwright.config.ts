@@ -22,7 +22,8 @@ export default defineConfig({
 
   // 'list' prints each test in the terminal. 'html' writes playwright-report/
   // ('never' = don't open it in a browser automatically; run `pnpm exec playwright show-report`).
-  reporter: [['list'], ['html', { open: 'never' }]],
+  // On CI, 'github' also marks a failed test on the pull request, at the line that failed.
+  reporter: [['list'], ['html', { open: 'never' }], ...(isCI ? [['github'] as const] : [])],
 
   use: {
     // Lets tests write `page.goto('/')` instead of the full URL.

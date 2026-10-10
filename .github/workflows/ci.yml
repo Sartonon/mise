@@ -11,11 +11,41 @@ on:
 permissions:
   contents: read
 
+# Runs in the same `group` cancel each other: a new one stops the one in progress.
+# A pull request's group is its number, so a new push cancels the run for its outdated
+# commit, and never touches another pull request. On main (no pull request), the group is
+# the commit itself, so every merge gets its own group and its own complete run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 jobs:
+  # One job per check, all running at the same time. Each shows up as its own row on the pull
+  # request (`lint`, `knip`, ...), and one failing check never stops or hides another.
+  # - lint:secrets  anything that looks like a secret (token, key, password)
+  # - format:check  any file Prettier would format differently
+  # - lint          ESLint, including the rules that use type information
+  # - typecheck     tsc over the whole project
+  # - knip          unused files, exports and dependencies, and undeclared packages
+  # - test          the Vitest unit and component tests
+  # - build         the production build (client and server bundles)
   check:
+    name: ${{ matrix.script }}
     runs-on: ubuntu-latest
+    strategy:
+      # By default, one failed job in a matrix cancels the rest. Off, so every check reports.
+      fail-fast: false
+      matrix:
+        script: [lint:secrets, format:check, lint, typecheck, knip, test, build]
+    # A job that hangs (a stuck install, say) is stopped here instead of after
+    # GitHub's default of 6 hours. A normal run takes under a minute.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Don't leave the job's token in .git/config, where every later step
+          # (and every dependency's code) could read it. Nothing here pushes.
+          persist-credentials: false
 
       # Installs the pnpm version named in package.json's `packageManager`.
       - uses: pnpm/action-setup@v6
@@ -31,24 +61,21 @@ jobs:
       # lockfile disagree, fail instead of quietly updating the lockfile.
       - run: pnpm install --frozen-lockfile
 
-      # Fails if any file contains something that looks like a secret (token, key, password).
-      - run: pnpm lint:secrets
-      # Fails if any file isn't formatted the way Prettier would format it.
-      - run: pnpm format:check
-      - run: pnpm lint
-      - run: pnpm typecheck
-      # Fails on unused files, exports and dependencies, and on imports of undeclared packages.
-      - run: pnpm knip
-      - run: pnpm test
-      # Fails if the app doesn't compile for production (client and server bundles).
-      - run: pnpm build
+      # The one check this job is for, from the list above.
+      - run: pnpm ${{ matrix.script }}
 
   # End-to-end tests in a real browser. A separate job, so it runs in parallel with `check`
   # and shows up as its own check on the pull request.
   e2e:
     runs-on: ubuntu-latest
+    # Longer than Playwright's own 10-minute `globalTimeout` (playwright.config.ts), so a slow
+    # test run still ends inside Playwright and writes its report. This only catches hangs
+    # outside the tests, like a stuck install or browser download.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -57,8 +84,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # Download Chromium, plus the Linux libraries it needs (--with-deps).
+      # --only-shell: the tests run headless, and headless Chromium is a separate, smaller
+      # "headless shell" build, so the full browser would be downloaded and never used.
       # The browser version must match @playwright/test, so it isn't cached separately.
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
 
       # Builds the app, starts it, and runs the tests (see webServer in playwright.config.ts).
       - run: pnpm test:e2e
