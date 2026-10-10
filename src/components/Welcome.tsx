@@ -5,5 +5,5 @@ export function Welcome() {
       <h1>Hello, Mise</h1>
       <p>Recipes and meal planning, built one small step at a time.</p>
     </main>
-  );
+  )
 }

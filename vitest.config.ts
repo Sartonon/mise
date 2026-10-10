@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   resolve: {
@@ -12,22 +12,22 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          name: "unit",
+          name: 'unit',
           // Plain logic: runs in Node, with no DOM.
-          include: ["src/**/*.test.ts"],
-          environment: "node",
+          include: ['src/**/*.test.ts'],
+          environment: 'node',
         },
       },
       {
         extends: true,
         test: {
-          name: "component",
+          name: 'component',
           // React components: jsdom gives them a fake `document` and `window`.
-          include: ["src/**/*.test.tsx"],
-          environment: "jsdom",
-          setupFiles: ["./src/test/setup.ts"],
+          include: ['src/**/*.test.tsx'],
+          environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts'],
         },
       },
     ],
   },
-});
+})
