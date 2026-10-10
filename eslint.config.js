@@ -4,6 +4,7 @@ import pluginRouter from '@tanstack/eslint-plugin-router'
 import vitest from '@vitest/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import jsxA11y from 'eslint-plugin-jsx-a11y-x'
 import playwright from 'eslint-plugin-playwright'
 import reactHooks from 'eslint-plugin-react-hooks'
 import testingLibrary from 'eslint-plugin-testing-library'
@@ -87,6 +88,24 @@ export default defineConfig(
       '@eslint-react/static-components': 'off',
       '@eslint-react/unsupported-syntax': 'off',
       '@eslint-react/use-memo': 'off',
+    },
+  },
+
+  // Accessibility in JSX: an <img> without `alt`, a <div onClick> that a keyboard can't
+  // reach, a link with no text, a form field with no label... The strict preset, because
+  // fixing these costs least while the markup is small.
+  // (This is a maintained fork of eslint-plugin-jsx-a11y, which doesn't support ESLint 10.)
+  {
+    files: ['src/**/*.tsx'],
+    extends: [jsxA11y.configs.strict],
+    settings: {
+      // TanStack Router's <Link> renders an <a>, so check it like one (for example,
+      // that it has text a screen reader can read out).
+      'jsx-a11y-x': { components: { Link: 'a' } },
+    },
+    rules: {
+      // <Link> takes its address in `to`, not `href`.
+      'jsx-a11y-x/anchor-is-valid': ['error', { components: ['Link'], specialLink: ['to'] }],
     },
   },
 
