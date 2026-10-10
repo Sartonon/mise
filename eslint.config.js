@@ -35,7 +35,7 @@ export default defineConfig(
 
   // Extra rules for test files (for example, a test with no `expect` in it).
   {
-    files: ["**/*.test.ts"],
+    files: ["**/*.test.{ts,tsx}"],
     extends: [vitest.configs.recommended],
   },
 
