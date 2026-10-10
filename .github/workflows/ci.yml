@@ -20,8 +20,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # One job per check, all running at the same time. Each shows up as its own row on the pull
+  # request (`lint`, `knip`, ...), and one failing check never stops or hides another.
+  # - lint:secrets  anything that looks like a secret (token, key, password)
+  # - format:check  any file Prettier would format differently
+  # - lint          ESLint, including the rules that use type information
+  # - typecheck     tsc over the whole project
+  # - knip          unused files, exports and dependencies, and undeclared packages
+  # - test          the Vitest unit and component tests
+  # - build         the production build (client and server bundles)
   check:
+    name: ${{ matrix.script }}
     runs-on: ubuntu-latest
+    strategy:
+      # By default, one failed job in a matrix cancels the rest. Off, so every check reports.
+      fail-fast: false
+      matrix:
+        script: [lint:secrets, format:check, lint, typecheck, knip, test, build]
     # A job that hangs (a stuck install, say) is stopped here instead of after
     # GitHub's default of 6 hours. A normal run takes under a minute.
     timeout-minutes: 10
@@ -44,36 +59,10 @@ jobs:
 
       # Install exactly what the lockfile says. If package.json and the
       # lockfile disagree, fail instead of quietly updating the lockfile.
-      - id: install
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      # Each check below has the same `if`. Without one, a step gets the default
-      # `if: success()`: run only if every step before it succeeded. So a formatting error
-      # would skip lint, typecheck and the tests, and hide whether they pass. Instead:
-      # - `!cancelled()` runs the step even after an earlier check failed (but not after
-      #   someone cancels the run, or a newer push cancels it).
-      # - `steps.install.outcome == 'success'` still skips it when the install failed
-      #   (`id: install` above names that step), since nothing can run without packages.
-      # Any failed check still fails the job: the `if` only decides whether a step runs.
-
-      # Fails if any file contains something that looks like a secret (token, key, password).
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm lint:secrets
-      # Fails if any file isn't formatted the way Prettier would format it.
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm format:check
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm lint
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm typecheck
-      # Fails on unused files, exports and dependencies, and on imports of undeclared packages.
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm knip
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm test
-      # Fails if the app doesn't compile for production (client and server bundles).
-      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: pnpm build
+      # The one check this job is for, from the list above.
+      - run: pnpm ${{ matrix.script }}
 
   # End-to-end tests in a real browser. A separate job, so it runs in parallel with `check`
   # and shows up as its own check on the pull request.
