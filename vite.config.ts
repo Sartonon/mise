@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
@@ -19,5 +20,7 @@ export default defineConfig({
     nitro(),
     // React: compiles JSX, and updates components in the browser without a full reload.
     viteReact(),
+    // Tailwind: finds the class names in our files and generates the CSS for them.
+    tailwindcss(),
   ],
 })

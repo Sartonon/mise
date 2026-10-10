@@ -1,0 +1,76 @@
+/* Tailwind v4 is configured here, in CSS: there is no tailwind.config.js.
+   This import brings in Tailwind's reset ("preflight") and every utility class.
+   Only the classes found in our files end up in the built CSS. `source('../')` makes
+   Tailwind look for them in src/ only (not in docs/ or the tests). */
+@import 'tailwindcss' source('../');
+
+/* The colours, as named roles ("background", "primary") instead of raw values, so a
+   component never says which colour it is, only what it's for. Each role has a light and a
+   dark value: `light-dark(light, dark)` picks one based on `color-scheme` below.
+   The names follow shadcn/ui (step 21), so its components will use these colours as they are.
+   Colours are in oklch(lightness chroma hue): lightness 0–1, then how colourful, then the hue
+   angle (around 40 is our tomato red, the colour of the favicon). Equal lightness looks
+   equally light whatever the hue, which makes contrast easy to reason about. */
+:root {
+  /* "This page supports both." The browser follows the system setting: it picks the
+     light-dark() values, and styles its own parts (scrollbars, form fields) to match.
+     (A theme toggle in step 22 will override this per user.) */
+  color-scheme: light dark;
+
+  --background: light-dark(oklch(0.985 0.006 80), oklch(0.2 0.015 45));
+  --foreground: light-dark(oklch(0.25 0.02 45), oklch(0.94 0.01 80));
+  /* Secondary text: still at least 4.5:1 against the background (WCAG AA). */
+  --muted-foreground: light-dark(oklch(0.48 0.02 45), oklch(0.72 0.02 60));
+  /* The brand colour, for links and the current page. Darker in light mode and lighter in
+     dark mode than the favicon's tomato, because text needs 4.5:1 contrast. */
+  --primary: light-dark(oklch(0.52 0.17 35), oklch(0.74 0.14 40));
+  /* Text on a `primary` background. */
+  --primary-foreground: light-dark(oklch(0.985 0.006 80), oklch(0.2 0.015 45));
+  --border: light-dark(oklch(0.9 0.01 70), oklch(0.32 0.02 45));
+  /* The focus outline. It needs 3:1 against the background (WCAG 1.4.11). */
+  --ring: var(--primary);
+}
+
+/* Turns each role into Tailwind classes: --color-background gives bg-background,
+   text-background, border-background... `inline` puts var(--background) itself into those
+   classes, so they follow the variable when the colour scheme changes. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+}
+
+/* Defaults for plain HTML elements. The `base` layer comes before Tailwind's utilities,
+   so a class on an element always wins over these. */
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  /* Tailwind's reset makes headings look like plain text, so the page title gets its size back. */
+  h1 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  /* The reset also removes the colour and underline from links. A link inside text has to
+     stand out by more than colour alone (WCAG 1.4.1), so it keeps an underline. */
+  a {
+    @apply text-primary underline underline-offset-4 hover:decoration-2;
+  }
+
+  /* One focus outline everywhere, in the brand colour, only for keyboard focus
+     (:focus-visible, so a mouse click doesn't show it). */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* Elements with tabindex="-1" are focused from code only: <main> after the skip link, and
+     a page's <h1> after navigating. They aren't controls, so no outline around them. */
+  [tabindex='-1']:focus {
+    @apply outline-none;
+  }
+}

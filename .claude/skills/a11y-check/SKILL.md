@@ -20,7 +20,7 @@ can't see. Go through it for every UI change, and say in the step summary which 
 - [ ] A `head` title like `About · Mise`.
 - [ ] The page returns a fragment and renders inside the layout's `<main>` (in `src/routes/__root.tsx`).
 - [ ] Its path is added to the `pages` list in `e2e/accessibility.spec.ts`.
-- [ ] From step 22 (dark theme): the axe scan runs in both themes.
+- [ ] Adding it there scans it in both the light and the dark colour scheme; both must pass.
 
 ## Keyboard
 

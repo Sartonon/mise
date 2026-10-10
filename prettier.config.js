@@ -9,4 +9,10 @@ export default {
   semi: false,
   // 'single' quotes in JS/TS. JSX attributes keep "double" quotes (jsxSingleQuote is off by default).
   singleQuote: true,
+  // Sorts Tailwind classes into Tailwind's own order (layout, then spacing, then colours...,
+  // with variants like hover: last), so the same classes always read the same way and
+  // diffs don't show reorderings.
+  plugins: ['prettier-plugin-tailwindcss'],
+  // Tailwind v4 has no JS config: the plugin reads our CSS to learn our own classes.
+  tailwindStylesheet: './src/styles/app.css',
 }

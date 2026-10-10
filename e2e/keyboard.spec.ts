@@ -9,9 +9,14 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('the first Tab reaches a skip link, which jumps to the content', async ({ page }) => {
-  await page.keyboard.press('Tab')
   const skipLink = page.getByRole('link', { name: 'Skip to content' })
+  // Hidden from sight until it has focus (Tailwind's sr-only shrinks it to 1×1 pixel)...
+  await expect(skipLink).toHaveCSS('width', '1px')
+
+  await page.keyboard.press('Tab')
   await expect(skipLink).toBeFocused()
+  // ...then shown, so a sighted keyboard user can see where focus is.
+  await expect(skipLink).not.toHaveCSS('width', '1px')
 
   await page.keyboard.press('Enter')
 

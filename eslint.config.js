@@ -4,6 +4,7 @@ import pluginRouter from '@tanstack/eslint-plugin-router'
 import vitest from '@vitest/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import betterTailwind from 'eslint-plugin-better-tailwindcss'
 import jsxA11y from 'eslint-plugin-jsx-a11y-x'
 import playwright from 'eslint-plugin-playwright'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -106,6 +107,26 @@ export default defineConfig(
     rules: {
       // <Link> takes its address in `to`, not `href`.
       'jsx-a11y-x/anchor-is-valid': ['error', { components: ['Link'], specialLink: ['to'] }],
+    },
+  },
+
+  // Tailwind classes: a class Tailwind doesn't know (a typo like `text-primay` would
+  // otherwise just do nothing), two classes that set the same property (`p-2 p-4`), a class
+  // built by joining strings (Tailwind can't find it in the code, so it never gets generated),
+  // plus duplicates, deprecated names, and a longer spelling of a class that has a shorter
+  // one. The plugin's other formatting rules are left out: Prettier sorts the classes.
+  {
+    files: ['src/**/*.tsx'],
+    extends: [betterTailwind.configs.correctness],
+    settings: {
+      // Tailwind v4 is configured in CSS, so the plugin reads our stylesheet to learn our
+      // own classes (like bg-primary).
+      'better-tailwindcss': { entryPoint: 'src/styles/app.css' },
+    },
+    rules: {
+      'better-tailwindcss/no-duplicate-classes': 'error',
+      'better-tailwindcss/no-deprecated-classes': 'error',
+      'better-tailwindcss/enforce-canonical-classes': 'error',
     },
   },
 
