@@ -1,4 +1,4 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { createRootRoute, HeadContent, Outlet, Scripts, useHydrated } from '@tanstack/react-router'
 import { NavBar } from '~/components/NavBar'
 import { NotFound } from '~/components/NotFound'
 
@@ -26,13 +26,18 @@ export const Route = createRootRoute({
 })
 
 function RootDocument() {
+  // False while rendering on the server (and during the browser's first render, so the two
+  // match), then true once React has taken over the page in the browser ("hydrated").
+  const hydrated = useHydrated()
+
   return (
     <html lang="en">
       <head>
         {/* Renders the tags from `head` above. */}
         <HeadContent />
       </head>
-      <body>
+      {/* Lets e2e tests wait until links work without a full page load. */}
+      <body data-hydrated={hydrated || undefined}>
         {/* Outside <Outlet />, so it stays on every page. */}
         <NavBar />
         {/* The matched child route (a page) renders here. */}
