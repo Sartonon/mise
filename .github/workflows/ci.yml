@@ -11,11 +11,13 @@ on:
 permissions:
   contents: read
 
-# One run at a time per branch or pull request. On a pull request, a new push cancels
-# the run for the outdated commit. On main every merge is checked, so runs there finish.
+# Runs in the same `group` cancel each other: a new one stops the one in progress.
+# A pull request's group is its number, so a new push cancels the run for its outdated
+# commit, and never touches another pull request. On main (no pull request), the group is
+# the commit itself, so every merge gets its own group and its own complete run.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   check:
