@@ -1,0 +1,12 @@
+{
+  // VS Code suggests installing these when the project is opened.
+  "recommendations": [
+    // Tailwind CSS IntelliSense: autocompletes class names, shows the CSS a class makes on
+    // hover, and understands app.css's @theme and @apply.
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-playwright.playwright",
+    "vitest.explorer"
+  ]
+}

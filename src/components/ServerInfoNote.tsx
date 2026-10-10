@@ -4,7 +4,7 @@ import type { ServerInfo } from '~/server/server-info.server'
 // so no server code comes along.
 export function ServerInfoNote({ info }: { info: ServerInfo }) {
   return (
-    <p>
+    <p className="text-sm text-muted-foreground">
       {/* <time dateTime> gives the exact time to machines; the text is for people.
           The text comes from the server as is: formatting it with the browser's locale
           or time zone could differ from the server's, and React would warn about a

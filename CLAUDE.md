@@ -30,7 +30,7 @@ The target is WCAG 2.2 AA. Lint (`jsx-a11y-x`) and the axe scan catch the markup
 
 - **Native elements first:** `<button>` for actions, `<Link>`/`<a>` for navigation, a `<label>` for every form field, headings in order. ARIA only where no native element fits.
 - **Keyboard:** everything works with Tab, Enter, Space and Esc, focus is always visible, and a dialog keeps focus inside and returns it when it closes. Try it, and add the flow to `e2e/keyboard.spec.ts`.
-- **Pages:** each page has one `<h1>` and a `head` title like `About · Mise`, and renders inside the layout's `<main>` (pages return a fragment). Add every new page to `e2e/accessibility.spec.ts`, and scan both themes once the dark theme exists (step 22).
+- **Pages:** each page has one `<h1>` and a `head` title like `About · Mise`, and renders inside the layout's `<main>` (pages return a fragment). Add every new page to `e2e/accessibility.spec.ts`, and it's scanned in both the light and the dark colour scheme.
 - **Changes are announced:** a form error is tied to its field (`aria-describedby`, `aria-invalid`) and the first invalid field gets focus; status messages and toasts use a live region.
 - **Meaning without colour or motion:** colour is never the only signal, and animations respect `prefers-reduced-motion`.
 - **Tests find things the way assistive technology does:** by role and accessible name (`getByRole`), which also proves the name exists.
