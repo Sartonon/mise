@@ -38,3 +38,16 @@ test('a full page load leaves focus alone', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Hello, Mise' })).not.toBeFocused()
   await expect(page.locator('body')).toBeFocused()
 })
+
+// DEMO, do not merge: "Add to plan" is a <div onClick>, which a keyboard can't reach or press.
+// axe passes it; this test is what catches it.
+test('the demo "Add to plan" control works from the keyboard', async ({ page }) => {
+  await page.goto('/demo')
+  await expect(page.locator('body[data-hydrated]')).toBeAttached()
+
+  const addToPlan = page.getByRole('button', { name: 'Add to plan' })
+  await addToPlan.focus({ timeout: 5_000 })
+  await page.keyboard.press('Enter')
+
+  await expect(page.getByText('Added to the plan.')).toBeVisible()
+})

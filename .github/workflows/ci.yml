@@ -29,19 +29,29 @@ jobs:
 
       # Install exactly what the lockfile says. If package.json and the
       # lockfile disagree, fail instead of quietly updating the lockfile.
-      - run: pnpm install --frozen-lockfile
+      - id: install
+        run: pnpm install --frozen-lockfile
 
+      # DEMO, do not merge: borrowed from #23 (step 19b). Without these `if:`s, the first failing
+      # check (lint) would skip the rest, and Knip would never get to report.
       # Fails if any file contains something that looks like a secret (token, key, password).
-      - run: pnpm lint:secrets
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm lint:secrets
       # Fails if any file isn't formatted the way Prettier would format it.
-      - run: pnpm format:check
-      - run: pnpm lint
-      - run: pnpm typecheck
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm format:check
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm lint
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm typecheck
       # Fails on unused files, exports and dependencies, and on imports of undeclared packages.
-      - run: pnpm knip
-      - run: pnpm test
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm knip
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm test
       # Fails if the app doesn't compile for production (client and server bundles).
-      - run: pnpm build
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm build
 
   # End-to-end tests in a real browser. A separate job, so it runs in parallel with `check`
   # and shows up as its own check on the pull request.

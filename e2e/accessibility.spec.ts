@@ -1,7 +1,8 @@
 import { expect, test } from './fixtures'
 
 // Every page, including the not-found page. Add new routes here as they're built.
-const pages = ['/', '/about', '/no-such-page']
+// DEMO, do not merge: '/demo' has planted accessibility problems.
+const pages = ['/', '/about', '/no-such-page', '/demo']
 
 for (const path of pages) {
   test(`${path} has no accessibility violations`, async ({ page, makeAxeBuilder }) => {
