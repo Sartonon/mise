@@ -34,7 +34,7 @@ Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're ad
 - `pnpm typecheck`: type-check everything with `tsc` (TypeScript 7)
 - `pnpm test`: run the Vitest tests once
 - `pnpm test:watch`: rerun the tests whenever a file changes
-- `pnpm test:e2e`: build the app, start it on port 3100 and run the Playwright tests in `e2e/` (CI runs this). The first time, run `pnpm exec playwright install chromium`
+- `pnpm test:e2e`: run the Playwright tests in `e2e/` against a dev server on port 3100. `CI=1 pnpm test:e2e` builds and tests the production server instead, as CI does. The first time, run `pnpm exec playwright install chromium`
 - `pnpm format`: format every file with Prettier
 - `pnpm format:check`: fail if any file isn't formatted (CI runs this)
 - `pnpm lint`: run ESLint, including the rules that use type information

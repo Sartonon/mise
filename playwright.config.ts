@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
 // End-to-end tests: a real browser talks to the real app, over HTTP, like a user would.
-// Not 3000, which `pnpm dev` uses: otherwise a running dev server would be reused
-// (see reuseExistingServer below) and the tests would skip the production build.
+// Its own port, not 3000 (where your own `pnpm dev` runs), so the tests always get the
+// server started below, never one that happens to be running.
 const PORT = 3100
 const baseURL = `http://localhost:${PORT}`
 
@@ -36,11 +36,16 @@ export default defineConfig({
   // Firefox and WebKit (Safari's engine) can be added here later as more projects.
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 
-  // Before the tests, build the app and start the production server, then wait until
-  // `url` answers. We test the production build, because that is what users get.
+  // Before the tests, start the app and wait until `url` answers.
   webServer: {
-    command: 'pnpm build && pnpm start',
+    // On CI: build and run the production server, because that is what users get.
+    // Locally: the dev server, which picks up file changes by itself. The VS Code extension
+    // keeps this server running between test runs, so a production build would go stale.
+    // (`--strictPort`: fail if 3100 is taken, instead of quietly moving to another port.)
+    // To test the production build locally, run `CI=1 pnpm test:e2e`.
+    command: isCI ? 'pnpm build && pnpm start' : `pnpm dev --port ${PORT} --strictPort`,
     url: baseURL,
+    // Used by `pnpm start` (Nitro's server reads PORT).
     env: { PORT: String(PORT) },
     // Locally, if the server is already running, use it instead of starting another.
     // On CI, always start a fresh one.
