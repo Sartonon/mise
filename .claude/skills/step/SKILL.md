@@ -36,7 +36,9 @@ CLAUDE.md has the rules. This is the order to do them in, with the commands.
 ## 4. Show that it works
 
 - The step's own check (a command's output, the type error appearing, the page in the browser).
-- Then the `check` skill, which runs what CI runs.
+- Then run every script in the `matrix` of `.github/workflows/ci.yml`, all of them even after one
+  fails, so every problem shows up at once. Add `pnpm test:e2e` when the step changes what a user
+  sees or does.
 
 ## 5. Walk through and commit
 

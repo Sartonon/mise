@@ -5,7 +5,7 @@ The user wants to follow along and understand every line, so the pace matters mo
 
 ## Working rules
 
-These hold in every session. The project skills in `.claude/skills/` do the work: `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), `check` runs every CI check locally, and `a11y-check` is the checklist for any UI change.
+These hold in every session. The project skills in `.claude/skills/` do the work: `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), and `a11y-check` is the checklist for any UI change.
 
 - The plan is `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one, and each finished step is one commit named `step NN: ...`.
 - Do **exactly one** plan step per turn. Never combine steps or jump ahead. Then stop and wait for the user's questions or "next".
