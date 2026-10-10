@@ -11,11 +11,24 @@ on:
 permissions:
   contents: read
 
+# One run at a time per branch or pull request. On a pull request, a new push cancels
+# the run for the outdated commit. On main every merge is checked, so runs there finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
     runs-on: ubuntu-latest
+    # A job that hangs (a stuck install, say) is stopped here instead of after
+    # GitHub's default of 6 hours. A normal run takes under a minute.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Don't leave the job's token in .git/config, where every later step
+          # (and every dependency's code) could read it. Nothing here pushes.
+          persist-credentials: false
 
       # Installs the pnpm version named in package.json's `packageManager`.
       - uses: pnpm/action-setup@v6
@@ -29,26 +42,43 @@ jobs:
 
       # Install exactly what the lockfile says. If package.json and the
       # lockfile disagree, fail instead of quietly updating the lockfile.
-      - run: pnpm install --frozen-lockfile
+      - id: install
+        run: pnpm install --frozen-lockfile
 
+      # Normally a failed step skips every step after it, so a formatting error would hide
+      # whether lint and the tests pass. This `if` runs each check anyway, so one run reports
+      # every problem. They still need a successful install, and stop if the run is cancelled.
       # Fails if any file contains something that looks like a secret (token, key, password).
-      - run: pnpm lint:secrets
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm lint:secrets
       # Fails if any file isn't formatted the way Prettier would format it.
-      - run: pnpm format:check
-      - run: pnpm lint
-      - run: pnpm typecheck
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm format:check
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm lint
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm typecheck
       # Fails on unused files, exports and dependencies, and on imports of undeclared packages.
-      - run: pnpm knip
-      - run: pnpm test
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm knip
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm test
       # Fails if the app doesn't compile for production (client and server bundles).
-      - run: pnpm build
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm build
 
   # End-to-end tests in a real browser. A separate job, so it runs in parallel with `check`
   # and shows up as its own check on the pull request.
   e2e:
     runs-on: ubuntu-latest
+    # Longer than Playwright's own 10-minute `globalTimeout` (playwright.config.ts), so a slow
+    # test run still ends inside Playwright and writes its report. This only catches hangs
+    # outside the tests, like a stuck install or browser download.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -57,8 +87,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # Download Chromium, plus the Linux libraries it needs (--with-deps).
+      # --only-shell: the tests run headless, and headless Chromium is a separate, smaller
+      # "headless shell" build, so the full browser would be downloaded and never used.
       # The browser version must match @playwright/test, so it isn't cached separately.
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
 
       # Builds the app, starts it, and runs the tests (see webServer in playwright.config.ts).
       - run: pnpm test:e2e
