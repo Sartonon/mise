@@ -4,10 +4,10 @@ import type { ReactNode } from 'react'
 // `children` lets the page put extra content under the greeting.
 export function Welcome({ children }: { children?: ReactNode }) {
   return (
-    <main>
+    <>
       <h1>Hello, Mise</h1>
       <p>Recipes and meal planning, built one small step at a time.</p>
       {children}
-    </main>
+    </>
   )
 }

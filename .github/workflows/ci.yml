@@ -37,6 +37,8 @@ jobs:
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
+      # Fails on unused files, exports and dependencies, and on imports of undeclared packages.
+      - run: pnpm knip
       - run: pnpm test
       # Fails if the app doesn't compile for production (client and server bundles).
       - run: pnpm build

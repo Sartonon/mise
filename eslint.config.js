@@ -1,8 +1,10 @@
 import js from '@eslint/js'
+import eslintReact from '@eslint-react/eslint-plugin'
 import pluginRouter from '@tanstack/eslint-plugin-router'
 import vitest from '@vitest/eslint-plugin'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import jsxA11y from 'eslint-plugin-jsx-a11y-x'
 import playwright from 'eslint-plugin-playwright'
 import reactHooks from 'eslint-plugin-react-hooks'
 import testingLibrary from 'eslint-plugin-testing-library'
@@ -18,9 +20,10 @@ export default defineConfig(
   // ESLint's own recommended rules for plain JavaScript mistakes.
   js.configs.recommended,
 
-  // typescript-eslint's recommended rules, including the ones that need type information
-  // (for example, a Promise that is never awaited).
-  tseslint.configs.recommendedTypeChecked,
+  // typescript-eslint's strict rules, including the ones that need type information
+  // (for example, a Promise that is never awaited, a `?.` on a value that can't be
+  // undefined, or a call to a function marked @deprecated).
+  tseslint.configs.strictTypeChecked,
   {
     languageOptions: {
       parserOptions: {
@@ -28,6 +31,29 @@ export default defineConfig(
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+    rules: {
+      // Numbers in template strings are fine (`${count} recipes`). Objects and
+      // undefined still aren't: they'd print "[object Object]" or "undefined".
+      '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      // A `switch` over a union type must handle every member, so adding a new
+      // member (say, a new meal slot) points at every switch that needs a new case.
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      // Only throw Error objects, except TanStack Router's `notFound()` and `redirect()`.
+      // They are plain objects on purpose: the router catches them and shows the
+      // not-found page or goes to another URL.
+      '@typescript-eslint/only-throw-error': [
+        'error',
+        {
+          allow: [
+            {
+              from: 'package',
+              package: '@tanstack/router-core',
+              name: ['NotFoundError', 'Redirect'],
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -42,6 +68,45 @@ export default defineConfig(
   {
     files: ['src/**/*.{ts,tsx}'],
     extends: [reactHooks.configs.flat.recommended],
+  },
+
+  // React mistakes that TypeScript doesn't catch: a list item without a `key`,
+  // `{count && <p>...</p>}` (which shows a "0" when count is 0), a component defined
+  // inside another component (it would be recreated, losing its state, on every render).
+  {
+    files: ['src/**/*.tsx'],
+    extends: [eslintReact.configs['recommended-type-checked']],
+    rules: {
+      // These repeat rules from React's own plugin above. Keep React's version only,
+      // so one mistake isn't reported twice.
+      '@eslint-react/error-boundaries': 'off',
+      '@eslint-react/exhaustive-deps': 'off',
+      '@eslint-react/purity': 'off',
+      '@eslint-react/rules-of-hooks': 'off',
+      '@eslint-react/set-state-in-effect': 'off',
+      '@eslint-react/set-state-in-render': 'off',
+      '@eslint-react/static-components': 'off',
+      '@eslint-react/unsupported-syntax': 'off',
+      '@eslint-react/use-memo': 'off',
+    },
+  },
+
+  // Accessibility in JSX: an <img> without `alt`, a <div onClick> that a keyboard can't
+  // reach, a link with no text, a form field with no label... The strict preset, because
+  // fixing these costs least while the markup is small.
+  // (This is a maintained fork of eslint-plugin-jsx-a11y, which doesn't support ESLint 10.)
+  {
+    files: ['src/**/*.tsx'],
+    extends: [jsxA11y.configs.strict],
+    settings: {
+      // TanStack Router's <Link> renders an <a>, so check it like one (for example,
+      // that it has text a screen reader can read out).
+      'jsx-a11y-x': { components: { Link: 'a' } },
+    },
+    rules: {
+      // <Link> takes its address in `to`, not `href`.
+      'jsx-a11y-x/anchor-is-valid': ['error', { components: ['Link'], specialLink: ['to'] }],
+    },
   },
 
   // TanStack Router: route options must be in the order its type inference needs

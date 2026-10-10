@@ -9,9 +9,9 @@ export const Route = createFileRoute('/about')({
 
 function About() {
   return (
-    <main>
+    <>
       <h1>About</h1>
       <p>Mise is a recipe and meal planner, built to learn TanStack Start one step at a time.</p>
-    </main>
+    </>
   )
 }
