@@ -5,6 +5,8 @@ The user wants to follow along and understand every line, so the pace matters mo
 
 ## Resuming work
 
+The project skills in `.claude/skills/` put the rules below into practice: `step` (one plan step, start to pull request), `check` (every CI check, locally) and `a11y-check` (the Accessibility list for UI steps).
+
 1. Read `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one.
 2. Run `git log --oneline` to confirm. Each finished step is one commit named `step NN: ...`.
 3. Tell the user which step is next and what it covers, then wait for them to say "next".
@@ -34,6 +36,10 @@ The target is WCAG 2.2 AA. Lint (`jsx-a11y-x`) and the axe scan catch the markup
 - **Changes are announced:** a form error is tied to its field (`aria-describedby`, `aria-invalid`) and the first invalid field gets focus; status messages and toasts use a live region.
 - **Meaning without colour or motion:** colour is never the only signal, and animations respect `prefers-reduced-motion`.
 - **Tests find things the way assistive technology does:** by role and accessible name (`getByRole`), which also proves the name exists.
+
+## Claude Code cloud sessions
+
+`.claude/hooks/session-start.sh` runs when a cloud session starts: it installs the Node version in `.nvmrc`, pnpm and the dependencies, and points Playwright at the image's Chromium (`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`), because `playwright install` can't download browsers there. There is no `gh` there either: use the GitHub MCP tools for pull requests and CI.
 
 ## Commands
 
