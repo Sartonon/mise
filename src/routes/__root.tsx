@@ -12,6 +12,12 @@ export const Route = createRootRoute({
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'Mise' },
     ],
+    // Files in public/ are served from the site root as they are.
+    // Browsers that support SVG icons use the sharp SVG; older ones fall back to the .ico.
+    links: [
+      { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+      { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+    ],
   }),
   component: RootDocument,
   // Rendered inside RootDocument in place of the page, so the nav bar stays.
