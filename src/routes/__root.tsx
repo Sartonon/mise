@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { NavBar } from '~/components/NavBar'
 
 // The root route wraps every page. Because Start renders on the server,
 // it owns the whole HTML document, not just a <div id="root">.
@@ -22,6 +23,8 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
+        {/* Outside <Outlet />, so it stays on every page. */}
+        <NavBar />
         {/* The matched child route (a page) renders here. */}
         <Outlet />
         {/* The JavaScript that makes the server-rendered HTML interactive ("hydration"). */}
