@@ -5,4 +5,8 @@
 export default {
   // Lines may be up to 100 characters (the default is 80, which wraps TypeScript a lot).
   printWidth: 100,
-};
+  // No semicolons at the ends of statements.
+  semi: false,
+  // 'single' quotes in JS/TS. JSX attributes keep "double" quotes (jsxSingleQuote is off by default).
+  singleQuote: true,
+}
