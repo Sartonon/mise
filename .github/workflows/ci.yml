@@ -58,6 +58,9 @@ jobs:
         run: pnpm lint
       - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm typecheck
+      # Fails on unused files, exports and dependencies, and on imports of undeclared packages.
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: pnpm knip
       - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm test
       # Fails if the app doesn't compile for production (client and server bundles).
