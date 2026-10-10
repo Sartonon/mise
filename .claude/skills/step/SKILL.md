@@ -27,6 +27,8 @@ CLAUDE.md has the rules. This is the order to do them in, with the commands.
 - Only this step. Short files, comments only where they teach something.
 - Install with `pnpm add` / `pnpm add -D` (never npm or yarn), and build files by hand, not with scaffolders.
 - The test from the step's _Test:_ note. For a pure function, write the test first and show it failing.
+- Server logic goes in plain functions that the server functions call, tested against an in-memory
+  database.
 - UI change: also follow the `a11y-check` skill, and add or extend an e2e test in `e2e/`.
 - A new script: add it to the **Commands** list in CLAUDE.md. A new check (format, lint, build, e2e...):
   add it to `.github/workflows/ci.yml` in the same step.
