@@ -1,7 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 // End-to-end tests: a real browser talks to the real app, over HTTP, like a user would.
-const PORT = 3000
+// Not 3000, which `pnpm dev` uses: otherwise a running dev server would be reused
+// (see reuseExistingServer below) and the tests would skip the production build.
+const PORT = 3100
 const baseURL = `http://localhost:${PORT}`
 
 // GitHub Actions sets CI=true.

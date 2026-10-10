@@ -1,5 +1,6 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 import { NavBar } from '~/components/NavBar'
+import { NotFound } from '~/components/NotFound'
 
 // The root route wraps every page. Because Start renders on the server,
 // it owns the whole HTML document, not just a <div id="root">.
@@ -13,6 +14,9 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootDocument,
+  // Rendered inside RootDocument in place of the page, so the nav bar stays.
+  // Without it, the router warns and shows a bare <p>Not Found</p>.
+  notFoundComponent: NotFound,
 })
 
 function RootDocument() {
