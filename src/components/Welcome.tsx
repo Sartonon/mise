@@ -6,7 +6,9 @@ export function Welcome({ children }: { children?: ReactNode }) {
   return (
     <>
       <h1>Hello, Mise</h1>
-      <p>Recipes and meal planning, built one small step at a time.</p>
+      <p className="text-lg text-muted-foreground">
+        Recipes and meal planning, built one small step at a time.
+      </p>
       {children}
     </>
   )
