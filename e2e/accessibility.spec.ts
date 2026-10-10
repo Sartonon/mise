@@ -1,4 +1,5 @@
 import { expect, test } from './fixtures'
+import { palettes } from '../src/lib/palette'
 
 // Every page, including the not-found page. Add new routes here as they're built.
 const pages = ['/', '/about', '/no-such-page']
@@ -19,6 +20,32 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
         // On failure, this prints each violation: the rule, why it matters, a help link,
         // and the HTML of every element that broke it.
+        expect(results.violations).toEqual([])
+      })
+    }
+  })
+}
+
+// The palette switch in src/lib/palette.ts only picks one, so the scans above only check that
+// one. This checks the others too, so switching never breaks contrast: it swaps the page's
+// data-palette attribute (what the switch sets) and scans again.
+for (const colorScheme of ['light', 'dark'] as const) {
+  test.describe(`every palette, ${colorScheme} mode`, () => {
+    test.use({ colorScheme })
+
+    for (const name of palettes) {
+      test(`the ${name} palette has no accessibility violations`, async ({
+        page,
+        makeAxeBuilder,
+      }) => {
+        await page.goto('/')
+        await expect(page.locator('body[data-hydrated]')).toBeAttached()
+        await page.locator('html').evaluate((html, name) => {
+          html.dataset.palette = name
+        }, name)
+
+        const results = await makeAxeBuilder().analyze()
+
         expect(results.violations).toEqual([])
       })
     }

@@ -4,30 +4,22 @@
    Tailwind look for them in src/ only (not in docs/ or the tests). */
 @import 'tailwindcss' source('../');
 
-/* The colours, as named roles ("background", "primary") instead of raw values, so a
-   component never says which colour it is, only what it's for. Each role has a light and a
-   dark value: `light-dark(light, dark)` picks one based on `color-scheme` below.
-   The names follow shadcn/ui (step 21), so its components will use these colours as they are.
-   Colours are in oklch(lightness chroma hue): lightness 0–1, then how colourful, then the hue
-   angle (around 40 is our tomato red, the colour of the favicon). Equal lightness looks
-   equally light whatever the hue, which makes contrast easy to reason about. */
+/* The colours are named roles ("background", "primary") instead of raw values, so a component
+   never says which colour it is, only what it's for. Their values come from the palette picked
+   in src/lib/palette.ts; palettes.css defines all of them. Colours are in
+   oklch(lightness chroma hue): lightness 0–1, then how colourful, then the hue angle. Equal
+   lightness looks equally light whatever the hue, which makes contrast easy to reason about. */
+@import './palettes.css';
+
 :root {
-  /* "This page supports both." The browser follows the system setting: it picks the
-     light-dark() values, and styles its own parts (scrollbars, form fields) to match.
-     (A theme toggle in step 22 will override this per user.) */
+  /* "This page supports both." The browser follows the system setting: every palette's
+     light-dark() values pick the light or dark one from this, and the browser styles its own
+     parts (scrollbars, form fields) to match. (A theme toggle in step 22 will override this
+     per user.) */
   color-scheme: light dark;
 
-  --background: light-dark(oklch(0.985 0.006 80), oklch(0.2 0.015 45));
-  --foreground: light-dark(oklch(0.25 0.02 45), oklch(0.94 0.01 80));
-  /* Secondary text: still at least 4.5:1 against the background (WCAG AA). */
-  --muted-foreground: light-dark(oklch(0.48 0.02 45), oklch(0.72 0.02 60));
-  /* The brand colour, for links and the current page. Darker in light mode and lighter in
-     dark mode than the favicon's tomato, because text needs 4.5:1 contrast. */
-  --primary: light-dark(oklch(0.52 0.17 35), oklch(0.74 0.14 40));
-  /* Text on a `primary` background. */
-  --primary-foreground: light-dark(oklch(0.985 0.006 80), oklch(0.2 0.015 45));
-  --border: light-dark(oklch(0.9 0.01 70), oklch(0.32 0.02 45));
-  /* The focus outline. It needs 3:1 against the background (WCAG 1.4.11). */
+  /* The focus outline, in every palette. It needs 3:1 against the background (WCAG 1.4.11),
+     and every palette's primary has at least 4.5:1. */
   --ring: var(--primary);
 }
 
@@ -36,10 +28,13 @@
    classes, so they follow the variable when the colour scheme changes. */
 @theme inline {
   --color-background: var(--background);
+  --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
 }

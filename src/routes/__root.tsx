@@ -3,6 +3,7 @@
 import { createRootRoute, HeadContent, Outlet, Scripts, useHydrated } from '@tanstack/react-router'
 import { NavBar } from '~/components/NavBar'
 import { NotFound } from '~/components/NotFound'
+import { palette } from '~/lib/palette'
 import { useFocusHeadingOnNavigate } from '~/lib/useFocusHeadingOnNavigate'
 // `?url` gives the stylesheet's address instead of its contents, so it can go in a <link>
 // below. The server then sends the CSS with the HTML, and the page never shows unstyled.
@@ -46,7 +47,8 @@ function RootDocument() {
   useFocusHeadingOnNavigate()
 
   return (
-    <html lang="en">
+    // data-palette picks the colours (see src/lib/palette.ts and src/styles/palettes.css).
+    <html lang="en" data-palette={palette}>
       <head>
         {/* Renders the tags from `head` above. */}
         <HeadContent />

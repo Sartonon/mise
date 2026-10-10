@@ -1,0 +1,79 @@
+/* The colour palettes. Each one fills the same roles (the names shadcn/ui uses), with a light
+   and a dark value: light-dark(light, dark) picks one based on `color-scheme` (see app.css).
+   <html data-palette="..."> picks the palette; its value comes from src/lib/palette.ts,
+   which is the one place to switch. src/lib/palette.test.ts checks that this file and that
+   list agree, and that every palette defines every role.
+   Every text colour has at least 4.5:1 contrast against what it sits on, in both modes
+   (WCAG AA). The axe scan in e2e/accessibility.spec.ts checks each palette in the browser.
+   Roles:
+   - background / foreground: the page and its text
+   - card: a raised surface (a recipe card), slightly lighter or darker than the page
+   - muted-foreground: secondary text (times, captions)
+   - primary / primary-foreground: links, the current page, buttons, and text on a button
+   - secondary / secondary-foreground: quieter fills, like tags, and their text
+   - border: dividers and outlines */
+
+/* Tomato & Basil: the favicon's tomato red, basil-green tags, flour-white paper; charred brown in the dark. */
+[data-palette='tomato'] {
+  --background: light-dark(oklch(0.985 0.006 80), oklch(0.19 0.012 40));
+  --card: light-dark(oklch(1 0 0), oklch(0.235 0.015 40));
+  --foreground: light-dark(oklch(0.25 0.02 45), oklch(0.94 0.01 80));
+  --muted-foreground: light-dark(oklch(0.48 0.02 45), oklch(0.73 0.02 60));
+  --primary: light-dark(oklch(0.53 0.18 33), oklch(0.73 0.15 38));
+  --primary-foreground: light-dark(oklch(0.99 0.005 80), oklch(0.19 0.012 40));
+  --secondary: light-dark(oklch(0.94 0.045 140), oklch(0.31 0.055 145));
+  --secondary-foreground: light-dark(oklch(0.4 0.09 145), oklch(0.87 0.08 140));
+  --border: light-dark(oklch(0.9 0.01 70), oklch(0.32 0.02 45));
+}
+
+/* Matcha Kitchen: rice-paper white, ink-green text and a deep matcha accent; tea-house green-black in the dark. */
+[data-palette='matcha'] {
+  --background: light-dark(oklch(0.975 0.012 120), oklch(0.18 0.02 160));
+  --card: light-dark(oklch(0.995 0.004 120), oklch(0.225 0.025 160));
+  --foreground: light-dark(oklch(0.24 0.03 150), oklch(0.94 0.015 115));
+  --muted-foreground: light-dark(oklch(0.47 0.03 145), oklch(0.73 0.03 130));
+  --primary: light-dark(oklch(0.47 0.11 150), oklch(0.82 0.13 125));
+  --primary-foreground: light-dark(oklch(0.98 0.01 120), oklch(0.2 0.03 155));
+  --secondary: light-dark(oklch(0.93 0.06 115), oklch(0.3 0.05 150));
+  --secondary-foreground: light-dark(oklch(0.4 0.08 135), oklch(0.87 0.08 120));
+  --border: light-dark(oklch(0.89 0.02 125), oklch(0.32 0.03 155));
+}
+
+/* Saffron & Indigo: indigo on warm white; in the dark, glowing saffron on an indigo night. */
+[data-palette='saffron'] {
+  --background: light-dark(oklch(0.98 0.012 90), oklch(0.18 0.045 275));
+  --card: light-dark(oklch(1 0 0), oklch(0.225 0.055 275));
+  --foreground: light-dark(oklch(0.24 0.05 275), oklch(0.95 0.015 90));
+  --muted-foreground: light-dark(oklch(0.48 0.04 275), oklch(0.75 0.04 280));
+  --primary: light-dark(oklch(0.42 0.16 275), oklch(0.83 0.14 75));
+  --primary-foreground: light-dark(oklch(0.98 0.012 90), oklch(0.2 0.05 275));
+  --secondary: light-dark(oklch(0.93 0.07 85), oklch(0.32 0.08 275));
+  --secondary-foreground: light-dark(oklch(0.42 0.1 60), oklch(0.88 0.05 280));
+  --border: light-dark(oklch(0.9 0.015 280), oklch(0.33 0.055 275));
+}
+
+/* Nordic Pantry: birch white and slate, lingonberry red for actions; a blue fjord night in the dark. */
+[data-palette='nordic'] {
+  --background: light-dark(oklch(0.97 0.006 240), oklch(0.2 0.022 250));
+  --card: light-dark(oklch(1 0 0), oklch(0.245 0.027 250));
+  --foreground: light-dark(oklch(0.25 0.025 250), oklch(0.94 0.01 240));
+  --muted-foreground: light-dark(oklch(0.48 0.025 250), oklch(0.73 0.025 245));
+  --primary: light-dark(oklch(0.5 0.17 15), oklch(0.73 0.14 12));
+  --primary-foreground: light-dark(oklch(0.99 0.003 240), oklch(0.2 0.022 250));
+  --secondary: light-dark(oklch(0.92 0.02 240), oklch(0.32 0.035 245));
+  --secondary-foreground: light-dark(oklch(0.4 0.045 245), oklch(0.87 0.03 240));
+  --border: light-dark(oklch(0.89 0.012 240), oklch(0.34 0.025 250));
+}
+
+/* Fig & Honey: fig purple on a blush page, honey-gold tags; deep plum in the dark. */
+[data-palette='fig'] {
+  --background: light-dark(oklch(0.975 0.01 340), oklch(0.18 0.03 330));
+  --card: light-dark(oklch(1 0 0), oklch(0.225 0.04 330));
+  --foreground: light-dark(oklch(0.24 0.04 330), oklch(0.95 0.012 80));
+  --muted-foreground: light-dark(oklch(0.48 0.04 330), oklch(0.75 0.03 330));
+  --primary: light-dark(oklch(0.45 0.15 340), oklch(0.77 0.12 345));
+  --primary-foreground: light-dark(oklch(0.99 0.005 340), oklch(0.19 0.03 330));
+  --secondary: light-dark(oklch(0.94 0.07 88), oklch(0.33 0.06 70));
+  --secondary-foreground: light-dark(oklch(0.44 0.09 70), oklch(0.89 0.1 88));
+  --border: light-dark(oklch(0.9 0.02 335), oklch(0.33 0.04 330));
+}
