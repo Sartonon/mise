@@ -26,6 +26,7 @@ Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're ad
 
 - `pnpm dev`: start the dev server with hot reload (http://localhost:3000)
 - `pnpm build`: build the app for production into `.output/` (CI runs this). On Vercel (where `VERCEL` is set) it writes `.vercel/output/` instead
+- `pnpm size`: measure the last build's JavaScript and CSS (raw and Brotli-compressed) and fail if it's over the budget in `scripts/bundle-size/budget.ts`. Every `pnpm build` also writes a treemap of the browser bundle to `bundle-report/treemap.html`. On pull requests, the `Bundle size` workflow comments with the change against `main`
 - `pnpm start`: run the production server from `.output/` with Node (run `pnpm build` first)
 - `pnpm typecheck`: type-check everything with `tsc` (TypeScript 7)
 - `pnpm test`: run the Vitest tests once

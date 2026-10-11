@@ -6,6 +6,8 @@ dist/
 .output/
 .vinxi/
 .tanstack/
+# Bundle treemap, written by every build (see vite.config.ts)
+bundle-report/
 # Vercel build output (Nitro writes it when the VERCEL env var is set)
 .vercel/
 

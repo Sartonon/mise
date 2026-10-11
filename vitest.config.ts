@@ -13,8 +13,8 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'unit',
-          // Plain logic: runs in Node, with no DOM.
-          include: ['src/**/*.test.ts'],
+          // Plain logic: runs in Node, with no DOM. `scripts/` holds our build tools.
+          include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
           environment: 'node',
         },
       },
