@@ -66,7 +66,7 @@ A demo app showing modern web development in one codebase: TypeScript, React, Ta
 
 ## Phase E — Database
 
-- [ ] 23. **Drizzle and SQLite connection:** `drizzle-orm`, `@libsql/client`, `drizzle-kit`; `src/server/db/client.ts` and `drizzle.config.ts`. `DATABASE_URL` (`file:local.db` locally) documented in `.env.example`.
+- [x] 23. **Drizzle and SQLite connection:** `drizzle-orm`, `@libsql/client`, `drizzle-kit`; `src/server/db/client.server.ts` and `drizzle.config.ts`. `DATABASE_URL` (`file:local.db` locally) documented in `.env.example`. _(Updated: server-only `createDb()` accepts connection settings for tests; Node 24 loads `.env`. Stable ORM 0.45.4 and Kit 0.31.11. Schema and migrations start in step 24.)_ _Test:_ an in-memory query and file persistence after closing and reopening through `DATABASE_URL`.
 - [ ] 24. **The first table:** `recipes` schema, `db:generate` and `db:migrate`. _Test:_ an in-memory test database helper that runs the migrations, and an insert/read test.
 - [ ] 25. **Related tables:** `ingredients`, `steps`, `tags`, `recipe_tags` with relations; second migration. _Test:_ relational query; delete cascades.
 - [ ] 26. **Seed script:** `src/server/db/seed.ts` (~12 recipes), `db:seed`. _Test:_ expected counts.

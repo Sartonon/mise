@@ -1,3 +1,6 @@
+allowBuilds:
+  # Drizzle Kit uses esbuild to load its TypeScript configuration.
+  esbuild: true
 # pnpm 11 reads its settings from this file (.npmrc is only for auth/registry).
 # This repo is a single package, so there is no `packages:` list.
 
