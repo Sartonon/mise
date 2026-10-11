@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "'/Users/santerirusila/Claude/claude-project/.codex/hooks/session-start.sh'"
+          }
+        ]
+      }
+    ]
+  }
+}
