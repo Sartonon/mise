@@ -22,8 +22,9 @@ import {
 } from 'react-aria-components'
 
 // cva() turns variant names into class lists: the first string is used every time, and
-// `variants` adds the classes for the chosen `variant` and `size`.
-const buttonVariants = cva(
+// `variants` adds the classes for the chosen `variant` and `size`. Exported so other React Aria
+// buttons (like the theme toggle's ToggleButtons) can look the same.
+export const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color] select-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none active:not-aria-[haspopup]:translate-y-px [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {

@@ -62,3 +62,27 @@ test('the cooking tip button works with Enter, Space and a click', async ({ page
   await button.click()
   await expect(tip).toHaveText('Toast spices in a dry pan to wake up their flavour.')
 })
+
+test('the theme toggle is one Tab stop, with arrow keys between its options', async ({ page }) => {
+  const group = page.getByRole('radiogroup', { name: 'Theme' })
+  await page.getByRole('link', { name: 'About' }).focus()
+
+  // Tab goes into the group once...
+  await page.keyboard.press('Tab')
+  await expect(group.getByRole('radio', { name: 'Light' })).toBeFocused()
+
+  // ...the arrow keys move focus inside it, without choosing...
+  await page.keyboard.press('ArrowRight')
+  await expect(group.getByRole('radio', { name: 'Dark' })).toBeFocused()
+  // (The browser in these tests reports a light system setting.)
+  await expect(group.getByRole('radio', { name: 'Light' })).toBeChecked()
+
+  // ...Space chooses the focused option...
+  await page.keyboard.press('Space')
+  await expect(group.getByRole('radio', { name: 'Dark' })).toBeChecked()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+
+  // ...and the next Tab leaves the group, instead of visiting each option.
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: 'Show a cooking tip' })).toBeFocused()
+})

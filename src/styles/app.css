@@ -14,13 +14,33 @@
 :root {
   /* "This page supports both." The browser follows the system setting: every palette's
      light-dark() values pick the light or dark one from this, and the browser styles its own
-     parts (scrollbars, form fields) to match. (A theme toggle in step 22 will override this
-     per user.) */
+     parts (scrollbars, form fields) to match. The theme toggle overrides it below. */
   color-scheme: light dark;
+}
 
-  /* The focus outline, in every palette. It needs 3:1 against the background (WCAG 1.4.11),
-     and every palette's primary has at least 4.5:1. */
-  --ring: var(--primary);
+/* The theme toggle's choice (src/lib/theme.ts puts it on <html data-theme>). One value instead
+   of two makes every light-dark() pick that side, whatever the system says. */
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Tailwind's `dark:` classes normally follow the system setting only, so they would ignore the
+   toggle. This redefines them: dark when the toggle says dark, or when nothing is chosen yet (no
+   data-theme) and the system is dark. :where() adds no specificity, so a dark: class beats the
+   plain one only because Tailwind puts it later. Our colours switch by themselves, so we don't
+   use dark: yet; this keeps it right for components copied from shadcn that do. */
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+      @slot;
+    }
+  }
 }
 
 /* Turns each role into Tailwind classes: --color-background gives bg-background,

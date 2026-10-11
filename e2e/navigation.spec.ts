@@ -1,8 +1,9 @@
 import { expect, test } from '@playwright/test'
 
-test('the nav bar links to the About page and back', async ({ page }) => {
+test('the header links to the About page and back', async ({ page }) => {
   await page.goto('/')
-  const nav = page.getByRole('navigation', { name: 'Main' })
+  // The nav is inside the header, the page's "banner" landmark.
+  const nav = page.getByRole('banner').getByRole('navigation', { name: 'Main' })
 
   await nav.getByRole('link', { name: 'About' }).click()
 
