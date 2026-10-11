@@ -28,6 +28,7 @@ test-results/
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 
 # Personal Claude Code settings (not shared)
