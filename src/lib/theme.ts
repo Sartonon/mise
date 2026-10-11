@@ -14,10 +14,22 @@ export function parseTheme(value: string | null): Theme {
 }
 
 // Runs in <head> as an inline script (see __root.tsx), before the browser reads <body>, so the
-// first paint already has the right colours: no white flash for someone who chose dark. It has
-// to be a plain string because it runs before React (or any of our modules) has loaded.
-// try/catch: reading localStorage throws when the browser blocks storage.
-export const themeScript = `try{var t=localStorage.getItem('${storageKey}');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`
+// first paint already has the right colours: no white flash for someone who chose dark.
+// It runs before React or any of our modules have loaded, so it can't call parseTheme() or use
+// storageKey from this file: it only gets what's passed in as an argument.
+function applySavedTheme(key: string) {
+  try {
+    const saved = localStorage.getItem(key)
+    if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved
+  } catch {
+    // The browser blocks storage: follow the system setting.
+  }
+}
+
+// An inline <script> takes source text, so toString() turns the function back into its code
+// (as compiled JavaScript, without the types), and the text calls it with the storage key:
+// (function applySavedTheme(key) { ... })("mise-theme")
+export const themeScript = `(${applySavedTheme.toString()})(${JSON.stringify(storageKey)})`
 
 // The theme as applied to the page: <html data-theme="dark">, or no attribute for system.
 // CSS (app.css) turns the attribute into `color-scheme`.
