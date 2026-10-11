@@ -1,0 +1,120 @@
+name: Bundle size
+
+# On every pull request: build it and the branch it goes into, then comment with how much
+# bigger or smaller the browser's download gets, a link to a treemap of what's in it, and
+# whether it still fits the budget (scripts/bundle-size/budget.ts).
+on:
+  pull_request:
+
+# The builds only read the repo. The `report` job asks for one more permission itself.
+permissions:
+  contents: read
+
+# A new push to the pull request stops the run for the old one (see ci.yml).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # Two builds at the same time. `base` is the branch the pull request goes into (main), as it
+  # is now. `head` is the default checkout: main with the pull request merged in, the same
+  # commit the CI workflow tests. So the difference between them is this pull request alone.
+  build:
+    name: build (${{ matrix.side }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        side: [base, head]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          # An empty `ref` means the default checkout.
+          ref: ${{ matrix.side == 'base' && github.event.pull_request.base.sha || '' }}
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      # Hand the build to the `report` job: the files the browser downloads (`public/`) and
+      # the treemap. They're copied into one folder first, so both builds' artifacts have the
+      # same layout, even when main doesn't make a treemap (yet).
+      - run: |
+          mkdir bundle
+          cp -r .output/public bundle/public
+          if [ -f bundle-report/treemap.html ]; then cp bundle-report/treemap.html bundle/; fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ matrix.side }}
+          path: bundle/
+          retention-days: 7
+
+  report:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # To write the comment on the pull request.
+      pull-requests: write
+    steps:
+      # Our scripts, from the pull request. They only use Node's own modules,
+      # so there's nothing to install.
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # Both builds, into builds/build-base/ and builds/build-head/.
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: build-*
+          path: builds
+
+      # The pull request's treemap on its own, not zipped, so the link in the comment
+      # downloads an HTML file that opens straight in the browser.
+      - id: treemap
+        uses: actions/upload-artifact@v7
+        with:
+          path: builds/build-head/treemap.html
+          archive: false
+          retention-days: 30
+
+      - name: Compare the builds
+        env:
+          BASE_NAME: ${{ github.event.pull_request.base.ref }}
+          TREEMAP_URL: ${{ steps.treemap.outputs.artifact-url }}
+        run: |
+          node scripts/bundle-size/compare.ts \
+            builds/build-base/public builds/build-head/public "$TREEMAP_URL" \
+            > report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # One comment per pull request, updated on every push: we find ours by its hidden
+      # first line. A pull request from a fork gets a read-only token, so it only gets the
+      # report in the run's summary.
+      - name: Comment on the pull request
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- bundle-size-report -->"))) | .id' \
+            | head -n 1)
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F body=@report.md > /dev/null
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -F body=@report.md > /dev/null
+          fi
+
+      # Last, so the comment is there even when this fails: the pull request must fit the budget.
+      - name: Check the budget
+        run: node scripts/bundle-size/size.ts builds/build-head/public

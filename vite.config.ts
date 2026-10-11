@@ -2,7 +2,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
-import { defineConfig } from 'vite'
+import { visualizer } from 'rollup-plugin-visualizer'
+import { defineConfig, perEnvironmentPlugin } from 'vite'
 
 export default defineConfig({
   resolve: {
@@ -22,5 +23,20 @@ export default defineConfig({
     viteReact(),
     // Tailwind: finds the class names in our files and generates the CSS for them.
     tailwindcss(),
+    // Bundle treemap: every build writes bundle-report/treemap.html, a map of the browser's
+    // JavaScript where each box is a module, sized by how much it adds. Start builds twice
+    // (the browser's code, then the server's), so it only runs for the `client` build.
+    perEnvironmentPlugin(
+      'bundle-treemap',
+      (environment) =>
+        environment.name === 'client' &&
+        visualizer({
+          filename: 'bundle-report/treemap.html',
+          title: 'Mise bundle treemap',
+          template: 'treemap',
+          gzipSize: true,
+          brotliSize: true,
+        }),
+    ),
   ],
 })
