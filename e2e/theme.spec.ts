@@ -54,6 +54,8 @@ test('a chosen theme wins over the system and is there from the first paint afte
   })
   await page.reload()
 
+  // The no-flash check: the observer above recorded "dark" (not "none") when <body> appeared,
+  // so the inline theme script had already run before anything could be drawn.
   await expect(page.locator('html')).toHaveAttribute('data-theme-at-first-body', 'dark')
   await expect(body).not.toHaveCSS('background-color', lightBackground)
   await expect(page.locator('body[data-hydrated]')).toBeAttached()
