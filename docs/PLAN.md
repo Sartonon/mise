@@ -66,7 +66,7 @@ A demo app showing modern web development in one codebase: TypeScript, React, Ta
 
 ## Phase E — Database
 
-- [ ] 23. **Drizzle and SQLite connection:** `drizzle-orm`, `@libsql/client`, `drizzle-kit`; `src/server/db/client.ts` and `drizzle.config.ts`. `DATABASE_URL` (`file:local.db` locally) documented in `.env.example`.
+- [x] 23. **Drizzle and SQLite connection:** `drizzle-orm` 0.45, `@libsql/client` 0.18, `drizzle-kit` 0.31 (Drizzle 1.0 is still a release candidate). `src/server/db/client.ts` has two plain functions: `databaseConfigFromEnv(env)` reads `DATABASE_URL` and the optional `DATABASE_AUTH_TOKEN` (Turso's), and `createDb(config)`; no shared `db` until step 28. `drizzle.config.ts` uses the `turso` dialect (works for files too, and sends the token). No `dotenv`: drizzle-kit and Nitro's dev server load `.env`. `allowBuilds: esbuild: false` in `pnpm-workspace.yaml`. _Test:_ `databaseConfigFromEnv` test-first; `createDb` against `:memory:` and a temporary file.
 - [ ] 24. **The first table:** `recipes` schema, `db:generate` and `db:migrate`. _Test:_ an in-memory test database helper that runs the migrations, and an insert/read test.
 - [ ] 25. **Related tables:** `ingredients`, `steps`, `tags`, `recipe_tags` with relations; second migration. _Test:_ relational query; delete cascades.
 - [ ] 26. **Seed script:** `src/server/db/seed.ts` (~12 recipes), `db:seed`. _Test:_ expected counts.
