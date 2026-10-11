@@ -64,18 +64,16 @@ test('a chosen theme wins over the system and is there from the first paint afte
   expect(errors).toEqual([])
 })
 
-test('choosing System follows the system setting again', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'light' })
+test('before a choice, the toggle shows the system setting and follows it', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' })
   await page.goto('/')
   await expect(page.locator('body[data-hydrated]')).toBeAttached()
-  const body = page.locator('body')
-  const lightBackground = await body.evaluate((el) => getComputedStyle(el).backgroundColor)
-  await page.getByRole('radio', { name: 'Dark' }).click()
-  await expect(body).not.toHaveCSS('background-color', lightBackground)
 
-  await page.getByRole('radio', { name: 'System' }).click()
+  await expect(page.getByRole('radio', { name: 'Dark' })).toBeChecked()
 
-  await expect(body).toHaveCSS('background-color', lightBackground)
-  await page.emulateMedia({ colorScheme: 'dark' })
-  await expect(body).not.toHaveCSS('background-color', lightBackground)
+  // The system switches to light, and nothing was chosen, so the toggle follows.
+  await page.emulateMedia({ colorScheme: 'light' })
+
+  await expect(page.getByRole('radio', { name: 'Light' })).toBeChecked()
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme')
 })

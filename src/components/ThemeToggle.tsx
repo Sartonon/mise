@@ -1,4 +1,4 @@
-import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
+import { MoonIcon, SunIcon } from 'lucide-react'
 import { ToggleButton, ToggleButtonGroup } from 'react-aria-components'
 import { buttonVariants } from '~/components/ui/button'
 import { setTheme, type Theme, themes, useTheme } from '~/lib/theme'
@@ -6,7 +6,6 @@ import { setTheme, type Theme, themes, useTheme } from '~/lib/theme'
 const options = {
   light: { label: 'Light', Icon: SunIcon },
   dark: { label: 'Dark', Icon: MoonIcon },
-  system: { label: 'System', Icon: MonitorIcon },
 } as const
 
 export function ThemeToggle() {
@@ -14,14 +13,15 @@ export function ThemeToggle() {
 
   return (
     // With one choice at a time (selectionMode="single"), React Aria makes this a radio group:
-    // screen readers say "Dark, radio button, 2 of 3, checked", the arrow keys move between the
+    // screen readers say "Dark, radio button, 2 of 2, checked", the arrow keys move between the
     // options, and Tab enters and leaves the group with one stop. disallowEmptySelection stops
     // a click on the current option from leaving none chosen.
     <ToggleButtonGroup
       aria-label="Theme"
       selectionMode="single"
       disallowEmptySelection
-      selectedKeys={[theme]}
+      // Empty while the theme isn't known yet (in the server's HTML, see useTheme).
+      selectedKeys={theme ? [theme] : []}
       onSelectionChange={(keys) => {
         // A Set with the one chosen key. Only our own ids can be in it.
         const [key] = keys

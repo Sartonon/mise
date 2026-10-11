@@ -11,7 +11,10 @@
    - muted-foreground: secondary text (times, captions)
    - primary / primary-foreground: links, the current page, buttons, and text on a button
    - secondary / secondary-foreground: quieter fills, like tags, and their text
-   - border: dividers and outlines */
+   - border: dividers and outlines
+   - ring: the keyboard focus outline. A second colour next to the brand colour, with at least
+     3:1 against background, card and secondary (WCAG 1.4.11), so focus is easy to spot
+     wherever it lands, including around a primary-coloured button. */
 
 /* Tomato & Basil: the favicon's tomato red, basil-green tags, flour-white paper; charred brown in the dark. */
 [data-palette='tomato'] {
@@ -24,6 +27,7 @@
   --secondary: light-dark(oklch(0.94 0.045 140), oklch(0.31 0.055 145));
   --secondary-foreground: light-dark(oklch(0.4 0.09 145), oklch(0.87 0.08 140));
   --border: light-dark(oklch(0.9 0.01 70), oklch(0.32 0.02 45));
+  --ring: light-dark(oklch(0.5 0.13 145), oklch(0.8 0.15 140));
 }
 
 /* Matcha Kitchen: rice-paper white, ink-green text and a deep matcha accent; tea-house green-black in the dark. */
@@ -37,6 +41,7 @@
   --secondary: light-dark(oklch(0.93 0.06 115), oklch(0.3 0.05 150));
   --secondary-foreground: light-dark(oklch(0.4 0.08 135), oklch(0.87 0.08 120));
   --border: light-dark(oklch(0.89 0.02 125), oklch(0.32 0.03 155));
+  --ring: light-dark(oklch(0.5 0.15 25), oklch(0.8 0.1 30));
 }
 
 /* Saffron & Indigo: indigo on warm white; in the dark, glowing saffron on an indigo night. */
@@ -50,6 +55,7 @@
   --secondary: light-dark(oklch(0.93 0.07 85), oklch(0.32 0.08 275));
   --secondary-foreground: light-dark(oklch(0.42 0.1 60), oklch(0.88 0.05 280));
   --border: light-dark(oklch(0.9 0.015 280), oklch(0.33 0.055 275));
+  --ring: light-dark(oklch(0.58 0.17 55), oklch(0.8 0.1 275));
 }
 
 /* Nordic Pantry: birch white and slate, lingonberry red for actions; a blue fjord night in the dark. */
@@ -63,6 +69,7 @@
   --secondary: light-dark(oklch(0.92 0.02 240), oklch(0.32 0.035 245));
   --secondary-foreground: light-dark(oklch(0.4 0.045 245), oklch(0.87 0.03 240));
   --border: light-dark(oklch(0.89 0.012 240), oklch(0.34 0.025 250));
+  --ring: light-dark(oklch(0.5 0.12 245), oklch(0.8 0.09 230));
 }
 
 /* Fig & Honey: fig purple on a blush page, honey-gold tags; deep plum in the dark. */
@@ -76,4 +83,5 @@
   --secondary: light-dark(oklch(0.94 0.07 88), oklch(0.33 0.06 70));
   --secondary-foreground: light-dark(oklch(0.44 0.09 70), oklch(0.89 0.1 88));
   --border: light-dark(oklch(0.9 0.02 335), oklch(0.33 0.04 330));
+  --ring: light-dark(oklch(0.56 0.12 70), oklch(0.84 0.13 88));
 }

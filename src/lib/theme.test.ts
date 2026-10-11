@@ -8,9 +8,9 @@ describe('parseTheme', () => {
   })
 
   // localStorage can hold anything (an old version's value, or one typed in devtools),
-  // so anything we don't know means "follow the system".
-  it('falls back to system for nothing saved or an unknown value', () => {
-    expect(parseTheme(null)).toBe('system')
-    expect(parseTheme('purple')).toBe('system')
+  // so anything we don't know means "no choice yet": follow the system.
+  it('gives null for nothing saved or an unknown value', () => {
+    expect(parseTheme(null)).toBeNull()
+    expect(parseTheme('system')).toBeNull()
   })
 })

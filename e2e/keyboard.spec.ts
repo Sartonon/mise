@@ -74,7 +74,8 @@ test('the theme toggle is one Tab stop, with arrow keys between its options', as
   // ...the arrow keys move focus inside it, without choosing...
   await page.keyboard.press('ArrowRight')
   await expect(group.getByRole('radio', { name: 'Dark' })).toBeFocused()
-  await expect(group.getByRole('radio', { name: 'System' })).toBeChecked()
+  // (The browser in these tests reports a light system setting.)
+  await expect(group.getByRole('radio', { name: 'Light' })).toBeChecked()
 
   // ...Space chooses the focused option...
   await page.keyboard.press('Space')

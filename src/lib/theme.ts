@@ -1,16 +1,16 @@
 import { useSyncExternalStore } from 'react'
 
-// "system" follows the operating system's setting; light and dark override it.
-export const themes = ['light', 'dark', 'system'] as const
+export const themes = ['light', 'dark'] as const
 export type Theme = (typeof themes)[number]
 
 // The choice lives in localStorage, in this browser only. The server never sees it, which is why
-// the script below has to apply it in the browser.
+// the script below has to apply it in the browser. Until someone chooses, nothing is saved and the
+// page follows the system setting.
 const storageKey = 'mise-theme'
 
-// "system" is never saved: it's what you get when nothing (or nonsense) is saved.
-export function parseTheme(value: string | null): Theme {
-  return value === 'light' || value === 'dark' ? value : 'system'
+// null: no choice yet (nothing saved, or a value we don't know).
+export function parseTheme(value: string | null): Theme | null {
+  return value === 'light' || value === 'dark' ? value : null
 }
 
 // Runs in <head> as an inline script (see __root.tsx), before the browser reads <body>, so the
@@ -31,25 +31,25 @@ function applySavedTheme(key: string) {
 // (function applySavedTheme(key) { ... })("mise-theme")
 export const themeScript = `(${applySavedTheme.toString()})(${JSON.stringify(storageKey)})`
 
-// The theme as applied to the page: <html data-theme="dark">, or no attribute for system.
-// CSS (app.css) turns the attribute into `color-scheme`.
-function getAppliedTheme(): Theme {
-  return parseTheme(document.documentElement.dataset.theme ?? null)
-}
+// The system setting, as CSS sees it (prefers-color-scheme).
+const systemDark = () => window.matchMedia('(prefers-color-scheme: dark)')
 
-function applyTheme(theme: Theme) {
-  if (theme === 'system') delete document.documentElement.dataset.theme
-  else document.documentElement.dataset.theme = theme
+// The theme the page shows: the choice on <html data-theme="...">, or else the system's.
+// CSS (app.css) turns the attribute into `color-scheme`.
+function getShownTheme(): Theme {
+  return (
+    parseTheme(document.documentElement.dataset.theme ?? null) ??
+    (systemDark().matches ? 'dark' : 'light')
+  )
 }
 
 // Components that show the theme, to be told when it changes.
 const listeners = new Set<() => void>()
 
 export function setTheme(theme: Theme) {
-  applyTheme(theme)
+  document.documentElement.dataset.theme = theme
   try {
-    if (theme === 'system') localStorage.removeItem(storageKey)
-    else localStorage.setItem(storageKey, theme)
+    localStorage.setItem(storageKey, theme)
   } catch {
     // Storage is blocked: the choice still applies until the page is closed.
   }
@@ -61,20 +61,28 @@ function subscribe(listener: () => void) {
   // tab shows up in the others too.
   const onStorage = (event: StorageEvent) => {
     if (event.key !== storageKey) return
-    applyTheme(parseTheme(event.newValue))
+    const theme = parseTheme(event.newValue)
+    if (theme) document.documentElement.dataset.theme = theme
+    else delete document.documentElement.dataset.theme
     listener()
   }
   listeners.add(listener)
   window.addEventListener('storage', onStorage)
+  // Before a choice, the toggle shows the system's theme, so it must also hear when that changes.
+  const media = systemDark()
+  media.addEventListener('change', listener)
   return () => {
     listeners.delete(listener)
     window.removeEventListener('storage', onStorage)
+    media.removeEventListener('change', listener)
   }
 }
 
 // React's way to read a value that lives outside React. The third function is what the server
-// renders (it can't know the choice), and what the browser uses while hydrating, so the two
-// match; React then re-renders with the real value straight away.
-export function useTheme(): Theme {
-  return useSyncExternalStore(subscribe, getAppliedTheme, () => 'system')
+// renders, and what the browser uses while hydrating, so the two match. The server can't know
+// the theme (the choice is in localStorage, the system setting is in the browser), so it's
+// undefined there and the toggle starts with nothing chosen; React then re-renders with the
+// real theme straight away.
+export function useTheme(): Theme | undefined {
+  return useSyncExternalStore(subscribe, getShownTheme, () => undefined)
 }
