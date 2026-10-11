@@ -3,37 +3,22 @@
 This is a demo app (recipe & meal planner) that the user is building **to learn**, one small step at a time.
 The user wants to follow along and understand every line, so the pace matters more than speed.
 
-## Resuming work
+## Working rules
 
-1. Read `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one.
-2. Run `git log --oneline` to confirm. Each finished step is one commit named `step NN: ...`.
-3. Tell the user which step is next and what it covers, then wait for them to say "next".
+These hold in every session. The project skills in `.claude/skills/` do the work: `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), and `a11y-check` is the checklist for any UI change.
 
-## How to do each step
-
-- Do **exactly one** plan step per turn. Never combine steps or jump ahead.
-- Explain what the step adds and why, then write the code with short files and comments only where they teach something.
+- The plan is `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one, and each finished step is one commit named `step NN: ...`.
+- Do **exactly one** plan step per turn. Never combine steps or jump ahead. Then stop and wait for the user's questions or "next".
 - Build things by hand. Don't use scaffolders that generate code the user hasn't seen explained.
 - Before installing packages, check their current versions and docs, because TanStack Start changes quickly.
-- Add the step's test along with its code (see the _Test:_ note on the step; write it first for pure functions). Keep server logic in plain functions so it can be tested against an in-memory database. Once Playwright exists (step 16), add or extend an e2e test whenever a step changes something a user can see or do. Every step that adds or changes UI also meets **Accessibility** below.
-- Run a check that shows the step works (a command's output, a type error appearing, the page in the browser), plus `pnpm test` once it exists.
-- Walk through the key lines, tick the step in `docs/PLAN.md`, and commit everything as `step NN: <short title>`.
-- Once the GitHub repo exists (step 4), push each step's commit to a branch and open a pull request into `main` titled like the commit. The user merges it. Once CI exists (step 6), check that it's green on the pull request (CI doesn't run on branch pushes without one); once Vercel is set up (step 14), check the deploy too. When a step adds a new check (format, lint, build, e2e), add it to CI in the same step.
-- The user creates and signs in to accounts (GitHub, Vercel, Turso) themselves. Never handle their passwords or tokens, and never commit secrets.
-- Stop and wait for the user's questions or "next".
+- Keep server logic in plain functions, so it can be tested against an in-memory database.
+- The user merges pull requests, and creates and signs in to accounts (GitHub, Vercel, Turso) themselves. Never handle their passwords or tokens, and never commit secrets.
+- If something in the plan turns out to be wrong or outdated, explain it to the user and update `docs/PLAN.md` instead of quietly doing something different.
+- Accessibility target: WCAG 2.2 AA. Every change to UI goes through the `a11y-check` skill.
 
-If something in the plan turns out to be wrong or outdated, explain it to the user and update `docs/PLAN.md` instead of quietly doing something different.
+## Claude Code cloud sessions
 
-## Accessibility
-
-The target is WCAG 2.2 AA. Lint (`jsx-a11y-x`) and the axe scan catch the markup and colour problems; what they can't see is how the page behaves, so a UI step is done when all of this holds:
-
-- **Native elements first:** `<button>` for actions, `<Link>`/`<a>` for navigation, a `<label>` for every form field, headings in order. ARIA only where no native element fits.
-- **Keyboard:** everything works with Tab, Enter, Space and Esc, focus is always visible, and a dialog keeps focus inside and returns it when it closes. Try it, and add the flow to `e2e/keyboard.spec.ts`.
-- **Pages:** each page has one `<h1>` and a `head` title like `About · Mise`, and renders inside the layout's `<main>` (pages return a fragment). Add every new page to `e2e/accessibility.spec.ts`, and it's scanned in both the light and the dark colour scheme.
-- **Changes are announced:** a form error is tied to its field (`aria-describedby`, `aria-invalid`) and the first invalid field gets focus; status messages and toasts use a live region.
-- **Meaning without colour or motion:** colour is never the only signal, and animations respect `prefers-reduced-motion`.
-- **Tests find things the way assistive technology does:** by role and accessible name (`getByRole`), which also proves the name exists.
+`.claude/hooks/session-start.sh` runs when a cloud session starts: it installs the Node version in `.nvmrc`, pnpm and the dependencies, and points Playwright at the image's Chromium (`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`), because `playwright install` can't download browsers there. There is no `gh` there either: use the GitHub MCP tools for pull requests and CI.
 
 ## Commands
 

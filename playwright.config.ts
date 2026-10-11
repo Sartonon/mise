@@ -31,6 +31,10 @@ export default defineConfig({
     // When a test fails on its retry, save a trace: a step-by-step recording with
     // DOM snapshots, network and console you can open in the report.
     trace: 'on-first-retry',
+    // Normally unset, so Playwright uses the browser from `playwright install`. Claude Code
+    // cloud sessions can't download one, so their setup hook points this at a Chromium
+    // that is already installed (see .claude/hooks/session-start.sh).
+    launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH },
   },
 
   // Which browsers to run in. Chromium only for now: it keeps CI fast.
