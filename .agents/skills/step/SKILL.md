@@ -20,7 +20,8 @@ AGENTS.md has the rules. This is the order to do them in, with the commands.
   `pnpm view <pkg> version peerDependencies engines`, then the package's own docs or changelog.
   TanStack Start changes quickly, so don't trust remembered APIs.
 - If the plan turns out to be wrong or outdated, tell the user and edit the step in `docs/PLAN.md`
-  with an _(Updated: ...)_ note, as earlier steps do.
+  with a short _(Updated: ...)_ note, as earlier steps do. Keep plan entries brief: only decisions
+  and changes that later steps depend on. The details belong in the commit and pull request.
 
 ## 3. Write it
 
