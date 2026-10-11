@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { CookingTip } from '~/components/CookingTip'
 import { ServerInfoNote } from '~/components/ServerInfoNote'
 import { Welcome } from '~/components/Welcome'
 import { fetchServerInfo } from '~/server/server-info.functions'
@@ -21,6 +22,7 @@ function Home() {
   return (
     <Welcome>
       <ServerInfoNote info={info} />
+      <CookingTip />
     </Welcome>
   )
 }

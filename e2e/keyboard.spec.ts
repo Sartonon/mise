@@ -43,3 +43,22 @@ test('a full page load leaves focus alone', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Hello, Mise' })).not.toBeFocused()
   await expect(page.locator('body')).toBeFocused()
 })
+
+test('the cooking tip button works with Enter, Space and a click', async ({ page }) => {
+  const button = page.getByRole('button', { name: 'Show a cooking tip' })
+  // The live region a screen reader reads out when its text changes.
+  const tip = page.getByRole('status')
+  await expect(tip).toBeEmpty()
+
+  await button.focus()
+  await page.keyboard.press('Enter')
+  await expect(tip).toHaveText('Salt pasta water until it tastes like the sea.')
+  // Pressing the button leaves focus on it, so the user can press it again.
+  await expect(button).toBeFocused()
+
+  await page.keyboard.press('Space')
+  await expect(tip).toHaveText('Let meat rest after cooking, so the juices stay in.')
+
+  await button.click()
+  await expect(tip).toHaveText('Toast spices in a dry pan to wake up their flavour.')
+})
