@@ -1,9 +1,17 @@
 /// <reference types="vite/client" />
 // ^ Vite's types for imports that aren't code, like `?url` below.
-import { createRootRoute, HeadContent, Outlet, Scripts, useHydrated } from '@tanstack/react-router'
-import { NavBar } from '~/components/NavBar'
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  ScriptOnce,
+  Scripts,
+  useHydrated,
+} from '@tanstack/react-router'
+import { Header } from '~/components/Header'
 import { NotFound } from '~/components/NotFound'
 import { palette } from '~/lib/palette'
+import { themeScript } from '~/lib/theme'
 import { useFocusHeadingOnNavigate } from '~/lib/useFocusHeadingOnNavigate'
 // `?url` gives the stylesheet's address instead of its contents, so it can go in a <link>
 // below. The server then sends the CSS with the HTML, and the page never shows unstyled.
@@ -48,10 +56,17 @@ function RootDocument() {
 
   return (
     // data-palette picks the colours (see src/lib/palette.ts and src/styles/palettes.css).
-    <html lang="en" data-palette={palette}>
+    // suppressHydrationWarning: the theme script adds data-theme to <html> before React loads,
+    // so the browser's <html> can differ from the server's. This tells React that's expected
+    // (for this element's own attributes only, not for anything inside it).
+    <html lang="en" data-palette={palette} suppressHydrationWarning>
       <head>
         {/* Renders the tags from `head` above. */}
         <HeadContent />
+        {/* Applies a saved light or dark choice before <body> is drawn (see src/lib/theme.ts).
+            ScriptOnce only renders on the server, and the script removes itself after running,
+            so React finds nothing there in the browser either. */}
+        <ScriptOnce>{themeScript}</ScriptOnce>
       </head>
       {/* Lets e2e tests wait until links work without a full page load. */}
       <body data-hydrated={hydrated || undefined}>
@@ -66,7 +81,7 @@ function RootDocument() {
           Skip to content
         </a>
         {/* Outside <Outlet />, so it stays on every page. */}
-        <NavBar />
+        <Header />
         {/* One <main> for every page, so each page has exactly one, and the skip link always
             has a target. tabIndex -1 lets the link move focus here, without adding a Tab stop.
             The classes: a centred column at most 48rem wide (max-w-3xl), and space-y-4 puts
