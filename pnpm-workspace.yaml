@@ -3,3 +3,9 @@
 
 # Refuse to install dependencies whose `engines` say they don't support our Node.
 engineStrict: true
+
+# Packages whose install scripts may run (pnpm 11 asks about each one).
+# esbuild (used by drizzle-kit and the TanStack build) only checks its binary in its script; pnpm already
+# installs the binary as an optional package (@esbuild/linux-x64 and so on), so: no.
+allowBuilds:
+  esbuild: false
