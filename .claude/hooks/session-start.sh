@@ -58,14 +58,11 @@ if [ -d /opt/pw-browsers ]; then
   ffmpeg_dir="$(PLAYWRIGHT_BROWSERS_PATH="$PW_BROWSERS" pnpm exec playwright install --dry-run ffmpeg |
     sed -n 's/^ *Install location: *//p')" || ffmpeg_dir=""
   if [ -n "$ffmpeg_dir" ] && [ ! -e "$ffmpeg_dir" ]; then
-    # Playwright pipes frames in and encodes them as VP9 WebM, so that encoder must be there.
-    # (Not `grep -q`: it stops reading early, ffmpeg then fails to write, and pipefail fails the check.)
-    if command -v ffmpeg > /dev/null && ffmpeg -hide_banner -encoders 2> /dev/null | grep libvpx-vp9 > /dev/null; then
+    if command -v ffmpeg > /dev/null; then
       mkdir -p "$ffmpeg_dir"
       ln -sfn "$(command -v ffmpeg)" "$ffmpeg_dir/ffmpeg-linux"
-      touch "$ffmpeg_dir/INSTALLATION_COMPLETE"
     else
-      echo "session-start: no ffmpeg with libvpx-vp9 found, so Playwright can't record videos." >&2
+      echo "session-start: no ffmpeg found, so Playwright can't record videos." >&2
     fi
   fi
 
