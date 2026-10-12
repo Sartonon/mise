@@ -3,3 +3,9 @@
 
 # Refuse to install dependencies whose `engines` say they don't support our Node.
 engineStrict: true
+
+# pnpm 11 doesn't run dependencies' install scripts unless they're listed here.
+# esbuild (used by drizzle-kit and tsx) gets its binary from a platform package,
+# so its script, which only double-checks that binary, isn't needed.
+allowBuilds:
+  esbuild: false
