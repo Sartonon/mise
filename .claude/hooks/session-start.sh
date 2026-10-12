@@ -42,3 +42,19 @@ fi
 
 # Not --frozen-lockfile: if the lockfile is out of date, still install, and let CI catch it.
 pnpm install
+
+# Playwright records videos with its own ffmpeg, in a folder named after the revision it wants.
+# The image's is older and can't be downloaded here, so make a browsers folder that links to the
+# image's and adds that ffmpeg folder, pointing at the system ffmpeg.
+if [ -d /opt/pw-browsers ] && command -v ffmpeg > /dev/null; then
+  PW_BROWSERS="$HOME/.cache/pw-browsers"
+  mkdir -p "$PW_BROWSERS"
+  ln -sfn /opt/pw-browsers/* "$PW_BROWSERS/"
+  ffmpeg_dir="$(PLAYWRIGHT_BROWSERS_PATH="$PW_BROWSERS" pnpm exec playwright install --dry-run ffmpeg |
+    sed -n 's/^ *Install location: *//p')" || true
+  if [ -n "$ffmpeg_dir" ] && [ ! -e "$ffmpeg_dir" ]; then
+    mkdir -p "$ffmpeg_dir"
+    ln -s "$(command -v ffmpeg)" "$ffmpeg_dir/ffmpeg-linux"
+  fi
+  echo "export PLAYWRIGHT_BROWSERS_PATH=\"$PW_BROWSERS\"" >> "${CLAUDE_ENV_FILE:-/dev/null}"
+fi
