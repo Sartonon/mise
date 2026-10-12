@@ -30,7 +30,8 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  // `**` skips folders whose names start with a dot, so the record skill's scripts are listed.
+  "include": ["**/*.ts", "**/*.tsx", ".claude/skills/record/*.ts"],
   // Build output isn't our code. Setting `exclude` replaces TypeScript's default,
   // so node_modules has to be listed again.
   "exclude": ["node_modules", "dist", ".output", ".vercel"]

@@ -42,3 +42,34 @@ fi
 
 # Not --frozen-lockfile: if the lockfile is out of date, still install, and let CI catch it.
 pnpm install
+
+# Playwright records videos with its own ffmpeg build, in a folder named after the revision
+# its version wants (like ffmpeg-1013). The image's /opt/pw-browsers may hold an older one,
+# and `playwright install ffmpeg` can't download here. So build a browsers folder of our own:
+# links to everything in the image, plus that ffmpeg folder pointing at a working ffmpeg.
+if [ -d /opt/pw-browsers ]; then
+  PW_BROWSERS="$HOME/.cache/pw-browsers"
+  mkdir -p "$PW_BROWSERS"
+  for entry in /opt/pw-browsers/*; do
+    ln -sfn "$entry" "$PW_BROWSERS/"
+  done
+
+  # Ask Playwright where it looks for ffmpeg, so this keeps working after an upgrade.
+  ffmpeg_dir="$(PLAYWRIGHT_BROWSERS_PATH="$PW_BROWSERS" pnpm exec playwright install --dry-run ffmpeg |
+    sed -n 's/^ *Install location: *//p')" || ffmpeg_dir=""
+  if [ -n "$ffmpeg_dir" ] && [ ! -e "$ffmpeg_dir" ]; then
+    # Playwright pipes frames in and encodes them as VP9 WebM, so that encoder must be there.
+    # (Not `grep -q`: it stops reading early, ffmpeg then fails to write, and pipefail fails the check.)
+    if command -v ffmpeg > /dev/null && ffmpeg -hide_banner -encoders 2> /dev/null | grep libvpx-vp9 > /dev/null; then
+      mkdir -p "$ffmpeg_dir"
+      ln -sfn "$(command -v ffmpeg)" "$ffmpeg_dir/ffmpeg-linux"
+      touch "$ffmpeg_dir/INSTALLATION_COMPLETE"
+    else
+      echo "session-start: no ffmpeg with libvpx-vp9 found, so Playwright can't record videos." >&2
+    fi
+  fi
+
+  if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+    echo "export PLAYWRIGHT_BROWSERS_PATH=\"$PW_BROWSERS\"" >> "$CLAUDE_ENV_FILE"
+  fi
+fi

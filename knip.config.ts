@@ -9,6 +9,10 @@ import type { KnipConfig } from 'knip'
 process.env.DATABASE_URL ??= ':memory:'
 
 const config: KnipConfig = {
+  // The record skill's config and script are run by hand (see its SKILL.md), never imported.
+  entry: ['.claude/skills/record/*.ts'],
+  // collect.ts runs the system's ffmpeg, which isn't an npm package.
+  ignoreBinaries: ['ffmpeg'],
   // secretlint loads its rules by name from .secretlintrc.json, which Knip doesn't read.
   ignoreDependencies: ['@secretlint/secretlint-rule-preset-recommend'],
 }

@@ -5,7 +5,7 @@ The user wants to follow along and understand every line, so the pace matters mo
 
 ## Working rules
 
-These hold in every session. The project skills in `.claude/skills/` do the work: `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), and `a11y-check` is the checklist for any UI change.
+These hold in every session. The project skills in `.claude/skills/` do the work: `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), `a11y-check` is the checklist for any UI change, and `record` makes videos and screenshots of the app for the user.
 
 - The plan is `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one, and each finished step is one commit named `step NN: ...`.
 - Do **exactly one** plan step per turn. Never combine steps or jump ahead. Then stop and wait for the user's questions or "next".
@@ -18,7 +18,7 @@ These hold in every session. The project skills in `.claude/skills/` do the work
 
 ## Claude Code cloud sessions
 
-`.claude/hooks/session-start.sh` runs when a cloud session starts: it installs the Node version in `.nvmrc`, pnpm and the dependencies, and points Playwright at the image's Chromium (`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`), because `playwright install` can't download browsers there. There is no `gh` there either: use the GitHub MCP tools for pull requests and CI.
+`.claude/hooks/session-start.sh` runs when a cloud session starts: it installs the Node version in `.nvmrc`, pnpm and the dependencies, and points Playwright at the image's Chromium (`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`), because `playwright install` can't download browsers there. For the same reason it gives Playwright a working ffmpeg for recording videos, in `~/.cache/pw-browsers` (`PLAYWRIGHT_BROWSERS_PATH`). There is no `gh` there either: use the GitHub MCP tools for pull requests and CI.
 
 ## Commands
 

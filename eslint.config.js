@@ -15,8 +15,14 @@ import tseslint from 'typescript-eslint'
 // object whose `files` match it (an object with no `files` applies to all files).
 export default defineConfig(
   // Files ESLint never looks at. Unlike Prettier, ESLint doesn't read .gitignore,
-  // so build output has to be listed here too.
-  globalIgnores(['dist/', '.output/', '.vercel/', 'src/routeTree.gen.ts']),
+  // so build output (and the record skill's one-off captures) has to be listed here too.
+  globalIgnores([
+    'dist/',
+    '.output/',
+    '.vercel/',
+    'src/routeTree.gen.ts',
+    '.claude/skills/record/scratch/',
+  ]),
 
   // ESLint's own recommended rules for plain JavaScript mistakes.
   js.configs.recommended,

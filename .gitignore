@@ -19,6 +19,8 @@ bundle-report/
 coverage/
 playwright-report/
 test-results/
+# One-off captures for the record skill (.claude/skills/record/SKILL.md)
+.claude/skills/record/scratch/
 
 # Environment variables (may contain secrets)
 .env
