@@ -10,18 +10,22 @@ export function ErrorPage({ onRetry }: { onRetry: () => void }) {
   const headingRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
-    // Render errors stay inside React's boundary, so the router's match status and head
-    // don't change. Give those errors a title too, and restore it when the fallback leaves.
+    // The error page sets its own title, the one place that does: a component that throws
+    // while rendering is caught by React, so the router (and the root route's `head`) never
+    // learns about it. Restore the old title when the error page goes.
     const previousTitle = document.title
     const errorTitle = 'Something went wrong · Mise'
     document.title = errorTitle
-    // A removed page heading loses focus to body. Keep focus elsewhere, such as the header.
+    // When the error page replaces the page that had focus, focus falls to <body>. Then move it
+    // to this heading. If focus is somewhere else, like the header, leave it there.
     if (document.activeElement === document.body) headingRef.current?.focus({ preventScroll: true })
     return () => {
-      // A navigation may already have supplied the next page's title.
-      if (document.title === errorTitle && previousTitle !== errorTitle) {
-        document.title = previousTitle
-      }
+      // A navigation may already have set the next page's title.
+      if (document.title === errorTitle) document.title = previousTitle
+      // This runs after React has put the next content in the page. If Try again worked, the
+      // button that had focus is gone, so move focus to the recovered page's heading. After a
+      // link click, focus is on the link, and the navigation moves it instead.
+      if (document.activeElement === document.body) focusPageHeading()
     }
   }, [])
 
@@ -40,13 +44,6 @@ export function ErrorPage({ onRetry }: { onRetry: () => void }) {
 // can render it without a router.
 export function RouteErrorPage() {
   const router = useRouter()
-  async function retry() {
-    // Wait for the loaders, then for React to replace the fallback. Its retry button has
-    // disappeared, so move lost focus to the recovered page instead of leaving it on body.
-    await router.invalidate()
-    requestAnimationFrame(() => {
-      if (document.activeElement === document.body) focusPageHeading()
-    })
-  }
-  return <ErrorPage onRetry={() => void retry()} />
+  // invalidate() runs the loaders again and clears the error, so the page gets a second try.
+  return <ErrorPage onRetry={() => void router.invalidate()} />
 }

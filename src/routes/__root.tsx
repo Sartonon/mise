@@ -29,10 +29,10 @@ export const Route = createRootRoute({
       // dark mode it doesn't flash a white background while loading.
       { name: 'color-scheme', content: 'light dark' },
       // The title is the first thing a screen reader reads on a new page (and what a tab
-      // or bookmark shows), so the not-found and error pages say so there too, not just in
-      // their <h1>. Every page is a child route, so when only this root route matched, there
-      // is no page at this URL.
-      { title: rootTitle(matches) },
+      // or bookmark shows), so the not-found page says so there too, not just in its <h1>.
+      // Every page is a child route, so when only this root route matched, there is no
+      // page at this URL. (The error page sets its own title: see ErrorPage.tsx.)
+      { title: matches.length === 1 ? 'Page not found · Mise' : 'Mise' },
     ],
     // Files in public/ are served from the site root as they are.
     // Browsers that support SVG icons use the sharp SVG; older ones fall back to the .ico.
@@ -47,13 +47,6 @@ export const Route = createRootRoute({
   // Without it, the router warns and shows a bare <p>Not Found</p>.
   notFoundComponent: NotFound,
 })
-
-function rootTitle(matches: { status: string }[]) {
-  // A page whose loader or component threw shows the error page (see src/router.tsx).
-  if (matches.some((match) => match.status === 'error')) return 'Something went wrong · Mise'
-  if (matches.length === 1) return 'Page not found · Mise'
-  return 'Mise'
-}
 
 function RootDocument() {
   // False while rendering on the server (and during the browser's first render, so the two
