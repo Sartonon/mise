@@ -5,20 +5,17 @@ The user wants to follow along and understand every line, so the pace matters mo
 
 ## Working rules
 
-These hold in every session. The project skills in `.Codex/skills/` do the work: `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), and `a11y-check` is the checklist for any UI change.
+These hold in every session, for every coding agent. The project skills in `.claude/skills/` do the work (`.agents/skills/` links to them for Codex): `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), and `a11y-check` is the checklist for any UI change.
 
 - The plan is `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one, and each finished step is one commit named `step NN: ...`.
 - Do **exactly one** plan step per turn. Never combine steps or jump ahead. Then stop and wait for the user's questions or "next".
 - Build things by hand. Don't use scaffolders that generate code the user hasn't seen explained.
 - Before installing packages, check their current versions and docs, because TanStack Start changes quickly.
+- For TanStack APIs, read the skill that ships with the installed version first: look for `SKILL.md` files in the package's `skills/` directory under `node_modules/.pnpm/`. Then Context7, if it's connected, or https://tanstack.com. If they disagree, the installed types in `node_modules` win.
 - Keep server logic in plain functions, so it can be tested against an in-memory database.
 - The user merges pull requests, and creates and signs in to accounts (GitHub, Vercel, Turso) themselves. Never handle their passwords or tokens, and never commit secrets.
 - If something in the plan turns out to be wrong or outdated, explain it to the user and update `docs/PLAN.md` instead of quietly doing something different.
 - Accessibility target: WCAG 2.2 AA. Every change to UI goes through the `a11y-check` skill.
-
-## Codex cloud sessions
-
-`.Codex/hooks/session-start.sh` runs when a cloud session starts: it installs the Node version in `.nvmrc`, pnpm and the dependencies, and points Playwright at the image's Chromium (`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`), because `playwright install` can't download browsers there. There is no `gh` there either: use the GitHub MCP tools for pull requests and CI.
 
 ## Commands
 
@@ -26,6 +23,7 @@ Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're ad
 
 - `pnpm dev`: start the dev server with hot reload (http://localhost:3000)
 - `pnpm build`: build the app for production into `.output/` (CI runs this). On Vercel (where `VERCEL` is set) it writes `.vercel/output/` instead
+- `pnpm size`: measure the last build's JavaScript and CSS (raw and Brotli-compressed) and fail if it's over the budget in `scripts/bundle-size/budget.ts`. Every `pnpm build` also writes a treemap of the browser bundle to `bundle-report/treemap.html`. On pull requests, the `Bundle size` workflow comments with the change against `main`
 - `pnpm start`: run the production server from `.output/` with Node (run `pnpm build` first)
 - `pnpm typecheck`: type-check everything with `tsc` (TypeScript 7)
 - `pnpm test`: run the Vitest tests once
