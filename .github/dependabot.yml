@@ -1,0 +1,48 @@
+# Dependabot opens pull requests that update our dependencies, once a week.
+# CI runs on them like on any other pull request, and the user merges them.
+# (Security alerts are a separate setting, already on in the repository.)
+version: 2
+updates:
+  # package.json and pnpm-lock.yaml. Dependabot reads `packageManager` to pick the pnpm version.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    # Only versions that have been out for 3 days: most broken or malicious releases are
+    # pulled again before then.
+    cooldown:
+      default-days: 3
+    # One pull request per group instead of one per package. A package goes into the first
+    # group that matches it. Major versions aren't grouped, so each one comes on its own.
+    groups:
+      # Start, Router and their plugins are released together and must match each other.
+      tanstack:
+        patterns: ['@tanstack/*']
+      minor-and-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # A beta pinned exactly on purpose (see step 14 in docs/PLAN.md): updated by hand.
+      - dependency-name: nitro
+      # The types must match the Node version in .nvmrc, not the newest Node.
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
+      # Aliases for TypeScript 6 and 7 (see step 3 in docs/PLAN.md): a new major means
+      # changing the alias by hand.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: '@typescript/native'
+        update-types: [version-update:semver-major]
+
+  # The actions used in .github/workflows/.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 3
+    groups:
+      actions:
+        patterns: ['*']
