@@ -19,6 +19,7 @@ updates:
       # Start, Router and their plugins are released together and must match each other.
       tanstack:
         patterns: ['@tanstack/*']
+        update-types: [minor, patch]
       minor-and-patch:
         patterns: ['*']
         update-types: [minor, patch]

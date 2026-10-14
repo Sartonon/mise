@@ -19,8 +19,8 @@ AGENTS.md has the rules. This is the order to do them in, with the commands.
 - For each package to install, check the current version and its docs first:
   `pnpm view <pkg> version peerDependencies engines`, then the package's own docs or changelog.
   TanStack Start changes quickly, so don't trust remembered APIs.
-  For a TanStack API, start with the skill for the installed version (`pnpm skills list`, then
-  `pnpm skills load <package>#<skill>`), then Context7.
+  For a TanStack API, start with the installed package's `skills/` directory (look for
+  `SKILL.md` under `node_modules/.pnpm/`), then Context7.
 - If the plan turns out to be wrong or outdated, tell the user and edit the step in `docs/PLAN.md`
   with a short _(Updated: ...)_ note, as earlier steps do. Keep plan entries brief: only decisions
   and changes that later steps depend on. The details belong in the commit and pull request.

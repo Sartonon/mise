@@ -11,7 +11,7 @@ These hold in every session, for every coding agent. The project skills in `.cla
 - Do **exactly one** plan step per turn. Never combine steps or jump ahead. Then stop and wait for the user's questions or "next".
 - Build things by hand. Don't use scaffolders that generate code the user hasn't seen explained.
 - Before installing packages, check their current versions and docs, because TanStack Start changes quickly.
-- For TanStack APIs, read the skill that ships with the installed version first: `pnpm skills list` lists them, and `pnpm skills load <package>#<skill>` prints one (for example `pnpm skills load @tanstack/start-client-core#start-core/server-functions`). Then Context7, if it's connected, or https://tanstack.com. If they disagree, the installed types in `node_modules` win.
+- For TanStack APIs, read the skill that ships with the installed version first: look for `SKILL.md` files in the package's `skills/` directory under `node_modules/.pnpm/`. Then Context7, if it's connected, or https://tanstack.com. If they disagree, the installed types in `node_modules` win.
 - Keep server logic in plain functions, so it can be tested against an in-memory database.
 - The user merges pull requests, and creates and signs in to accounts (GitHub, Vercel, Turso) themselves. Never handle their passwords or tokens, and never commit secrets.
 - If something in the plan turns out to be wrong or outdated, explain it to the user and update `docs/PLAN.md` instead of quietly doing something different.
@@ -34,5 +34,4 @@ Use **pnpm** only (never npm or yarn). Scripts will be listed here as they're ad
 - `pnpm lint`: run ESLint, including the rules that use type information. Warnings fail it too (`--max-warnings 0`)
 - `pnpm knip`: find unused files, exports and dependencies, and imports of packages missing from `package.json` (CI runs this). Config: `knip.config.ts`
 - `pnpm lint:secrets`: scan every file (except those in `.gitignore`) for tokens, keys and passwords (CI runs this)
-- `pnpm skills`: TanStack Intent, for the agent skills that TanStack packages ship in `node_modules`, matching the installed versions. `pnpm skills list` lists them, `pnpm skills load <package>#<skill>` prints one
 - `pnpm prepare`: install the git hooks (runs automatically on `pnpm install`). The pre-commit hook runs lint-staged: `secretlint` on every staged file, plus `eslint --fix --max-warnings 0`, `prettier --write` and `vitest related` on the staged files

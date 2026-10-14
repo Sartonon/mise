@@ -109,4 +109,7 @@ test('when going back to a page fails, focus moves to the error page heading', a
   await page.unroute('**/_serverFn/**')
   await page.keyboard.press('Enter')
   await expect(page.getByText('Rendered by the server at')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Hello, Mise' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: 'Show a cooking tip' })).toBeFocused()
 })
