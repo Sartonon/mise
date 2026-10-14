@@ -1,11 +1,11 @@
 ---
 name: step
-description: Do the next step of docs/PLAN.md the way CLAUDE.md asks, from explaining it to opening its pull request. Use when the user says "next", "/step", "continue the plan", or asks which step is next.
+description: Do the next step of docs/PLAN.md the way AGENTS.md asks, from explaining it to opening its pull request. Use when the user says "next", "/step", "continue the plan", or asks which step is next.
 ---
 
 # One plan step
 
-CLAUDE.md has the rules. This is the order to do them in, with the commands.
+AGENTS.md has the rules. This is the order to do them in, with the commands.
 
 ## 1. Find the step
 
@@ -19,6 +19,8 @@ CLAUDE.md has the rules. This is the order to do them in, with the commands.
 - For each package to install, check the current version and its docs first:
   `pnpm view <pkg> version peerDependencies engines`, then the package's own docs or changelog.
   TanStack Start changes quickly, so don't trust remembered APIs.
+  For a TanStack API, start with the skill for the installed version (`pnpm skills list`, then
+  `pnpm skills load <package>#<skill>`), then Context7.
 - If the plan turns out to be wrong or outdated, tell the user and edit the step in `docs/PLAN.md`
   with a short _(Updated: ...)_ note, as earlier steps do. Keep plan entries brief: only decisions
   and changes that later steps depend on. The details belong in the commit and pull request.
@@ -31,7 +33,7 @@ CLAUDE.md has the rules. This is the order to do them in, with the commands.
 - Server logic goes in plain functions that the server functions call, tested against an in-memory
   database.
 - UI change: also follow the `a11y-check` skill, and add or extend an e2e test in `e2e/`.
-- A new script: add it to the **Commands** list in CLAUDE.md. A new check (format, lint, build, e2e...):
+- A new script: add it to the **Commands** list in AGENTS.md. A new check (format, lint, build, e2e...):
   add it to `.github/workflows/ci.yml` in the same step.
 
 ## 4. Show that it works

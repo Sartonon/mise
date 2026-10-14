@@ -23,7 +23,8 @@
     "prepare": "husky",
     "lint:secrets": "secretlint \"**/*\"",
     "knip": "knip",
-    "size": "node scripts/bundle-size/size.ts"
+    "size": "node scripts/bundle-size/size.ts",
+    "skills": "intent"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
@@ -33,6 +34,7 @@
     "@secretlint/secretlint-rule-preset-recommend": "^13.0.7",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/eslint-plugin-router": "^1.162.0",
+    "@tanstack/intent": "0.5.5",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
