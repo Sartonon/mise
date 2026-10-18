@@ -20,14 +20,17 @@ export function useFocusHeadingOnNavigate() {
     previous.current = pathname
     // The first page load (`last` is undefined until the router has resolved), or no change.
     if (last === undefined || last === pathname) return
-
-    const main = document.getElementById('main')
-    const heading = main?.querySelector('h1')
-    const target = heading ?? main
-    if (!target) return
-    // tabIndex -1: focusable from code, but not a stop when pressing Tab.
-    target.tabIndex = -1
-    // The router's scroll restoration decides where the page scrolls, so don't scroll here.
-    target.focus({ preventScroll: true })
+    focusPageHeading()
   }, [pathname])
+}
+
+export function focusPageHeading() {
+  const main = document.getElementById('main')
+  const heading = main?.querySelector('h1')
+  const target = heading ?? main
+  if (!target) return
+  // tabIndex -1: focusable from code, but not a stop when pressing Tab.
+  target.tabIndex = -1
+  // The router's scroll restoration decides where the page scrolls, so don't scroll here.
+  target.focus({ preventScroll: true })
 }

@@ -31,7 +31,7 @@ export const Route = createRootRoute({
       // The title is the first thing a screen reader reads on a new page (and what a tab
       // or bookmark shows), so the not-found page says so there too, not just in its <h1>.
       // Every page is a child route, so when only this root route matched, there is no
-      // page at this URL.
+      // page at this URL. (The error page sets its own title: see ErrorPage.tsx.)
       { title: matches.length === 1 ? 'Page not found · Mise' : 'Mise' },
     ],
     // Files in public/ are served from the site root as they are.

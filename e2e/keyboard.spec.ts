@@ -86,3 +86,30 @@ test('the theme toggle is one Tab stop, with arrow keys between its options', as
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: 'Show a cooking tip' })).toBeFocused()
 })
+
+test('when going back to a page fails, focus moves to the error page heading', async ({ page }) => {
+  const nav = page.getByRole('navigation', { name: 'Main' })
+  await nav.getByRole('link', { name: 'About' }).click()
+  await expect(page.getByRole('heading', { name: 'About' })).toBeFocused()
+
+  // Home's loader fails from now on (see error.spec.ts). Going back, Home first shows the data
+  // it loaded before and focuses its heading. Then loading fresh data fails, and the error page
+  // replaces Home, heading and all.
+  await page.route('**/_serverFn/**', (route) =>
+    route.fulfill({ status: 500, body: 'Internal Server Error' }),
+  )
+  await nav.getByRole('link', { name: 'Home' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('heading', { name: 'Something went wrong' })).toBeFocused()
+
+  // The heading has focus, so the next Tab is the first control after it.
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeFocused()
+
+  await page.unroute('**/_serverFn/**')
+  await page.keyboard.press('Enter')
+  await expect(page.getByText('Rendered by the server at')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Hello, Mise' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: 'Show a cooking tip' })).toBeFocused()
+})
