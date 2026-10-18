@@ -11,6 +11,7 @@ A demo app showing modern web development in one codebase: TypeScript, React, Ta
 - **Data:** SQLite with Drizzle ORM (`@libsql/client`): a local file in development and tests, Turso in production
 - **Extras:** Tailwind v4 + shadcn/ui, Zod + TanStack Form, Vitest + Testing Library + Playwright, Husky + lint-staged + GitHub Actions CI
 - **Hosting:** GitHub, deployed to Vercel
+- **Look:** the "Night bento" design in `docs/DESIGN.md`. Every UI step follows it
 
 **How we work:** small steps, one at a time, each explained, tested, committed as `step NN: ...` and checked in CI. Then stop and wait for "next". Build by hand, no scaffolders; check current versions and docs before installing.
 
@@ -63,6 +64,7 @@ A demo app showing modern web development in one codebase: TypeScript, React, Ta
 - [x] 21. **shadcn/ui setup:** `components.json` (`aria-nova`, React Aria base), `cn()` from the `cn` package, and a hand-written `Button` (44px default, our focus outline, no `destructive` yet). _Test:_ Button component test; `CookingTip` example on the home page.
 - [x] 22. **Layout and theme:** `Header.tsx` with nav and a Light/Dark toggle (no "System" option, the user's choice). The choice is saved in `localStorage` and applied by an inline script before first paint; with no choice the page follows the system. `dark:` follows the choice. Each palette got its own `--ring` focus colour, contrast-checked in a unit test with `colorjs.io`. A cookie for server-rendered theme was left for later. _Test:_ unit, component and e2e (survives reload, no flash, keyboard).
 - [x] 22b. **Bundle size:** `rollup-plugin-visualizer` writes `bundle-report/treemap.html` for the client build. `pnpm size` (`scripts/bundle-size/`, TypeScript run directly by Node 24) lists each .js/.css file's raw and Brotli size and fails above the budget in `budget.ts` (200 kB JS, 10 kB CSS, compressed). The `Bundle size` workflow comments a comparison against `main` on every pull request. _Test:_ unit tests for measuring, the budget check and the report. _(Added after step 22, at the user's request.)_
+- [ ] 22c. **Night bento look:** switch `palette` to `saffron`; self-host the Unbounded and DM Sans fonts (check the current packages, keep `pnpm size` under budget); restyle `Header.tsx` as the rounded pill bar and `Button` as pills, as `docs/DESIGN.md` describes. _Test:_ update the component tests and e2e for the changed header, axe in both colour schemes. _(Added after step 23b, when the user picked the design.)_
 
 ## Phase E — Database
 
