@@ -8,6 +8,7 @@ The user wants to follow along and understand every line, so the pace matters mo
 These hold in every session, for every coding agent. The project skills in `.claude/skills/` do the work (`.agents/skills/` links to them for Codex): `step` takes one plan step from explaining it to its pull request (use it when the user says "next" or asks what's next), and `a11y-check` is the checklist for any UI change.
 
 - The plan is `docs/PLAN.md`. The first unticked step (`- [ ]`) is the next one, and each finished step is one commit named `step NN: ...`.
+- Every finished step comes with **Try it yourself** steps (in the pull request and the reply): the exact commands to run and what to look at to test the feature and learn what's new in it.
 - Do **exactly one** plan step per turn. Never combine steps or jump ahead. Then stop and wait for the user's questions or "next".
 - Build things by hand. Don't use scaffolders that generate code the user hasn't seen explained.
 - Before installing packages, check their current versions and docs, because TanStack Start changes quickly.

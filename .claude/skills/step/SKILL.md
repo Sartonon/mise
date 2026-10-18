@@ -53,6 +53,12 @@ AGENTS.md has the rules. This is the order to do them in, with the commands.
 ## 6. Pull request
 
 - Push the commit to a branch and open a pull request into `main`, titled like the commit.
+- The description ends with a **Try it yourself** section: numbered steps the user can follow on
+  their own machine to see the new feature work and to learn the new thing in it. Give exact
+  commands and what each one should show, e.g. for a database step the `pnpm` / `drizzle-kit` /
+  SQL commands that list the tables or rows; for a UI step the page to open and what to click; for
+  a new tool, a command that makes it fail and one that makes it pass. Add one or two "change this
+  and see what happens" experiments, and a link to the relevant docs.
   In cloud sessions there is no `gh`: use the GitHub MCP tools (`mcp__github__create_pull_request`).
 - Wait for CI to finish on the pull request and report the result. From step 14, check the Vercel
   preview deploy too.
@@ -60,4 +66,5 @@ AGENTS.md has the rules. This is the order to do them in, with the commands.
 
 ## 7. Stop
 
-Summarise what changed and wait for questions or "next".
+Summarise what changed, repeat the **Try it yourself** steps from the pull request, and wait for
+questions or "next".
