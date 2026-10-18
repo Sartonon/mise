@@ -8,6 +8,8 @@ dist/
 .tanstack/
 # Bundle treemap, written by every build (see vite.config.ts)
 bundle-report/
+# Lighthouse reports, written by `pnpm lighthouse`
+lighthouse-report/
 # Vercel build output (Nitro writes it when the VERCEL env var is set)
 .vercel/
 
