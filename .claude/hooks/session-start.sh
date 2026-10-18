@@ -36,6 +36,8 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
     # playwright.config.ts launches this one instead when the variable is set.
     if [ -x /opt/pw-browsers/chromium ]; then
       echo "export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium"
+      # And `pnpm lighthouse` (chrome-launcher) uses it too, as there's no Chrome here.
+      echo "export CHROME_PATH=/opt/pw-browsers/chromium"
     fi
   } >> "$CLAUDE_ENV_FILE"
 fi

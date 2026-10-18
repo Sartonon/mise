@@ -1,0 +1,98 @@
+name: Lighthouse
+
+# On every pull request: build it, audit each page with Lighthouse (performance, accessibility,
+# best practices and SEO), and comment with the scores and a link to the full reports.
+# It only reports: a low score doesn't fail the pull request.
+on:
+  pull_request:
+
+# The audit only reads the repo. The `report` job asks for one more permission itself.
+permissions:
+  contents: read
+
+# A new push to the pull request stops the run for the old one (see ci.yml).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # Runs the pull request's code (its build and its dependencies), so it gets no write access.
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      reports-url: ${{ steps.upload.outputs.artifact-url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      # GitHub's Ubuntu runners come with Google Chrome, and Lighthouse finds it by itself.
+      - run: pnpm lighthouse
+
+      # The HTML reports (one per page) and summary.json, zipped into one download.
+      - id: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-report
+          path: lighthouse-report/
+          retention-days: 30
+
+  report:
+    needs: audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # To write the comment on the pull request.
+      pull-requests: write
+    steps:
+      # Our scripts, from the pull request. comment.ts and report.ts only use Node's own
+      # modules, so there's nothing to install.
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: lighthouse-report
+          path: lighthouse-report
+
+      # $GITHUB_STEP_SUMMARY is the path of a file GitHub gives every step. Markdown written
+      # to it is shown on the run's Summary page (Actions tab → this run), under the jobs.
+      # So the report is there too, even for a pull request from a fork that gets no comment.
+      - name: Write the report
+        env:
+          REPORTS_URL: ${{ needs.audit.outputs.reports-url }}
+        run: |
+          node scripts/lighthouse/comment.ts lighthouse-report/summary.json "$REPORTS_URL" \
+            > report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      # One comment per pull request, updated on every push: we find ours by its hidden
+      # first line (see bundle-size.yml). A pull request from a fork gets a read-only token,
+      # so it only gets the report in the run's summary.
+      - name: Comment on the pull request
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- lighthouse-report -->"))) | .id' \
+            | head -n 1)
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F body=@report.md > /dev/null
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -F body=@report.md > /dev/null
+          fi
