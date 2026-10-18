@@ -16,6 +16,10 @@ import { useFocusHeadingOnNavigate } from '~/lib/useFocusHeadingOnNavigate'
 // `?url` gives the stylesheet's address instead of its contents, so it can go in a <link>
 // below. The server then sends the CSS with the HTML, and the page never shows unstyled.
 import appCss from '~/styles/app.css?url'
+// The Latin font files (the alphabet every page uses). With `?url`, Vite gives the same hashed
+// address that app.css points to, so the preload below and the CSS fetch one file, not two.
+import dmSansUrl from '@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url'
+import unboundedUrl from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url'
 
 // The root route wraps every page. Because Start renders on the server,
 // it owns the whole HTML document, not just a <div id="root">.
@@ -38,6 +42,18 @@ export const Route = createRootRoute({
     // Browsers that support SVG icons use the sharp SVG; older ones fall back to the .ico.
     links: [
       { rel: 'stylesheet', href: appCss },
+      // The browser only finds out it needs a font once the CSS has loaded and it sees text that
+      // uses it. A preload starts the download straight away, so the text swaps from the
+      // fallback font to ours sooner (or never shows the fallback). Fonts are always fetched
+      // in CORS mode, so the preload needs crossOrigin too, or the browser fetches them twice.
+      { rel: 'preload', href: dmSansUrl, as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' },
+      {
+        rel: 'preload',
+        href: unboundedUrl,
+        as: 'font',
+        type: 'font/woff2',
+        crossOrigin: 'anonymous',
+      },
       { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
       { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
     ],
@@ -76,7 +92,7 @@ function RootDocument() {
             keyboard user can see where focus is. */}
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:no-underline"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:no-underline"
         >
           Skip to content
         </a>

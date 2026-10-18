@@ -6,4 +6,4 @@ export type Palette = (typeof palettes)[number]
 // The switch: change this to use another palette everywhere. A name that isn't in the list
 // above is a type error. __root.tsx puts it on <html data-palette="...">, which picks the
 // matching block in palettes.css.
-export const palette: Palette = 'tomato'
+export const palette: Palette = 'saffron'

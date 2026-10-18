@@ -18,3 +18,12 @@ test('the header links to the About page and back', async ({ page }) => {
   await expect(page).toHaveURL('/')
   await expect(page.getByRole('heading', { name: 'Hello, Mise' })).toBeVisible()
 })
+
+test('the mise wordmark in the header links home', async ({ page }) => {
+  await page.goto('/about')
+
+  await page.getByRole('banner').getByRole('link', { name: 'mise' }).click()
+
+  await expect(page).toHaveURL('/')
+  await expect(page.getByRole('heading', { name: 'Hello, Mise' })).toBeVisible()
+})
