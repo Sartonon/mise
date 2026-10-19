@@ -9,5 +9,11 @@ export default defineConfig({
   dialect: 'turso',
   // The same function the app uses, so both always talk to the same database.
   dbCredentials: databaseConfigFromEnv(),
-  // Step 24 adds `schema` (our tables in TypeScript) and `out` (where the SQL migrations go).
+  // Our tables in TypeScript. drizzle-kit compares them with the last migration's snapshot
+  // and writes a new migration for the difference.
+  schema: './src/server/db/schema.ts',
+  // Where the migrations go: one numbered `.sql` file per migration, plus `meta/` with a snapshot
+  // of the schema after each one and `_journal.json`, the list of them in order. All of it is
+  // committed, and a migration is never edited by hand once it has been applied anywhere.
+  out: './drizzle',
 })
