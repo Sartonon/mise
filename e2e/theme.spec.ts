@@ -71,6 +71,11 @@ test('switching the theme fades the page together, with nothing left behind', as
   await page.emulateMedia({ colorScheme: 'light' })
   await page.goto('/')
   await expect(page.locator('body[data-hydrated]')).toBeAttached()
+  // After hydration the toggle marks the system's theme as selected, and that pill fades in.
+  // Let it finish first: a click during it would reverse it, a fade of its own.
+  await page.evaluate(async () => {
+    await Promise.all(document.getAnimations().map((animation) => animation.finished))
+  })
 
   const { fades, restarted } = await page.evaluate(async () => {
     // transitioncancel fires when a fade is stopped partway, for example to start it over.
