@@ -8,6 +8,13 @@
       "when": 1792438600862,
       "tag": "0000_create_recipes",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792440155432,
+      "tag": "0001_add_ingredients_steps_tags",
+      "breakpoints": true
     }
   ]
 }
