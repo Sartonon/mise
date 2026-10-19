@@ -24,7 +24,9 @@
     "lint:secrets": "secretlint \"**/*\"",
     "knip": "knip",
     "size": "node scripts/bundle-size/size.ts",
-    "lighthouse": "node scripts/lighthouse/audit.ts"
+    "lighthouse": "node scripts/lighthouse/audit.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
