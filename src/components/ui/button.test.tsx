@@ -25,6 +25,11 @@ describe('Button', () => {
     expect(button).not.toHaveClass('text-sm')
   })
 
+  it('is a pill, as docs/DESIGN.md asks', () => {
+    render(<Button>Save</Button>)
+    expect(screen.getByRole('button', { name: 'Save' })).toHaveClass('rounded-full')
+  })
+
   it('is disabled with isDisabled', () => {
     render(<Button isDisabled>Save</Button>)
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()

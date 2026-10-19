@@ -64,6 +64,48 @@ test('a chosen theme wins over the system and is there from the first paint afte
   expect(errors).toEqual([])
 })
 
+// Backgrounds and borders fade when the theme changes. They must all fade together: anything
+// that switched at once, faded at another speed, or restarted its fade partway would show the
+// old theme's colours after the rest of the page had moved on.
+test('switching the theme fades the page together, with nothing left behind', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' })
+  await page.goto('/')
+  await expect(page.locator('body[data-hydrated]')).toBeAttached()
+
+  const { fades, restarted } = await page.evaluate(async () => {
+    // transitioncancel fires when a fade is stopped partway, for example to start it over.
+    const restarted: string[] = []
+    document.addEventListener('transitioncancel', (event) => restarted.push(event.propertyName))
+    // A click from code, not Playwright's mouse: the pointer hovering the button first would
+    // start a hover fade of its own, earlier than the theme's.
+    document.querySelector<HTMLElement>('[aria-label="Dark"]')?.click()
+    // Wait for the next frame, as the browser does before drawing: by then React has updated
+    // the toggle too.
+    await new Promise(requestAnimationFrame)
+    // Every fade (CSS transition) the click started, once each knows when it starts.
+    const transitions = document.getAnimations().filter((a) => a instanceof CSSTransition)
+    await Promise.all(transitions.map((t) => t.ready))
+    const fades = transitions.map((t) => ({
+      property: t.transitionProperty,
+      onBody: t.effect instanceof KeyframeEffect && t.effect.target === document.body,
+      timing: JSON.stringify({ start: t.startTime, duration: t.effect?.getTiming().duration }),
+    }))
+    // Wait for them to finish, to hear about any that restart.
+    await Promise.all(transitions.map((t) => t.finished))
+    return { fades, restarted }
+  })
+
+  // The page's own background fades...
+  expect(fades).toContainEqual(
+    expect.objectContaining({ property: 'background-color', onBody: true }),
+  )
+  // ...every other fade starts at the same moment and lasts as long...
+  expect(new Set(fades.map((fade) => fade.timing)).size).toBe(1)
+  // ...and none is stopped partway.
+  expect(restarted).toEqual([])
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+})
+
 test('before a choice, the toggle shows the system setting and follows it', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' })
   await page.goto('/')

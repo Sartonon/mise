@@ -20,3 +20,26 @@ test('the favicons are linked and served', async ({ page, request }) => {
     expect(response.status()).toBe(200)
   }
 })
+
+test('the self-hosted fonts load from our own server', async ({ page }) => {
+  // Collect every font the browser downloads.
+  const fontUrls: string[] = []
+  page.on('response', (response) => {
+    if (response.request().resourceType() === 'font') fontUrls.push(response.url())
+  })
+  await page.goto('/')
+
+  // document.fonts is the page's list of @font-face fonts, each with a status. `ready` waits until
+  // the ones the page uses have loaded. Then: which families are actually loaded?
+  const loadedFamilies = await page.evaluate(async () => {
+    await document.fonts.ready
+    return [...document.fonts].filter((font) => font.status === 'loaded').map((font) => font.family)
+  })
+
+  expect(new Set(loadedFamilies)).toEqual(new Set(['DM Sans Variable', 'Unbounded Variable']))
+  // Both come from this site (no Google Fonts), each once: the preload and the CSS share it.
+  const origin = new URL(page.url()).origin
+  expect(fontUrls.length).toBeGreaterThan(0)
+  for (const url of fontUrls) expect(url.startsWith(origin)).toBe(true)
+  expect(new Set(fontUrls).size).toBe(fontUrls.length)
+})

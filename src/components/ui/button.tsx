@@ -8,9 +8,9 @@
 // - No `destructive` variant yet: our palettes have no colour for it. It comes with the
 //   first delete button.
 // - No `dark:` classes: our colours switch between light and dark by themselves.
-// - Only the colours animate (nova animates everything, `transition-all`). Otherwise the
-//   focus outline would fade and grow in, instead of showing at once.
-// - The transition is switched off for people who ask for reduced motion.
+// - No transition class (nova has `transition-all`): app.css fades every element's background
+//   and border together, so the button fades in step with the page when the theme changes.
+// - Pill-shaped (rounded-full), as docs/DESIGN.md asks, instead of nova's rounded-lg.
 // - No LinkButton yet. For a link that looks like a button, we'll put the classes on
 //   TanStack's <Link>, whose `to` is type-checked.
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -25,7 +25,7 @@ import {
 // `variants` adds the classes for the chosen `variant` and `size`. Exported so other React Aria
 // buttons (like the theme toggle's ToggleButtons) can look the same.
 export const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color] select-none disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none active:not-aria-[haspopup]:translate-y-px [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-full border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap select-none disabled:pointer-events-none disabled:opacity-50 active:not-aria-[haspopup]:translate-y-px [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {

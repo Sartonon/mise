@@ -11,6 +11,14 @@
    lightness looks equally light whatever the hue, which makes contrast easy to reason about. */
 @import './palettes.css';
 
+/* The two typefaces, self-hosted: the font files come from npm (Fontsource) and Vite copies them
+   into the build, so no request goes to Google Fonts (faster, and no third party sees our visitors).
+   Each is a "variable" font: one file holds every weight, instead of one file per weight.
+   Each file has an @font-face per alphabet (latin, latin-ext, cyrillic...) with a unicode-range,
+   so the browser downloads only the alphabets the page actually uses. */
+@import '@fontsource-variable/dm-sans/wght.css';
+@import '@fontsource-variable/unbounded/wght.css';
+
 :root {
   /* "This page supports both." The browser follows the system setting: every palette's
      light-dark() values pick the light or dark one from this, and the browser styles its own
@@ -59,16 +67,37 @@
   --color-ring: var(--ring);
 }
 
+/* Plain @theme (not inline): font-sans replaces Tailwind's default text font, so DM Sans is the
+   font of the whole page, and font-display is a new class for Unbounded. The system fonts after
+   them are the fallbacks while the font file loads (and if it never does). */
+@theme {
+  --font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Unbounded Variable', ui-sans-serif, system-ui, sans-serif;
+}
+
 /* Defaults for plain HTML elements. The `base` layer comes before Tailwind's utilities,
    so a class on an element always wins over these. */
 @layer base {
+  /* Every element fades its background and border colours over the same 150ms. Switching the
+     theme changes them all at once, so the whole page crossfades together: if only some elements
+     faded, they'd show the old theme's colours for a moment after the rest had switched. Hover
+     fades too. Text colour changes at once: it's inherited, and Chrome restarts a child's text
+     fade on every frame while its parent's fades, so nested text would lag far behind. Off for
+     people who ask for reduced motion. */
+  *,
+  ::before,
+  ::after {
+    @apply transition-[background-color,border-color] motion-reduce:transition-none;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
   }
 
-  /* Tailwind's reset makes headings look like plain text, so the page title gets its size back. */
+  /* Tailwind's reset makes headings look like plain text, so the page title gets its size back,
+     in the display font with slightly tight letter spacing (DESIGN.md). */
   h1 {
-    @apply text-3xl font-bold tracking-tight;
+    @apply font-display text-3xl font-bold tracking-[-0.02em];
   }
 
   /* The reset also removes the colour and underline from links. A link inside text has to
