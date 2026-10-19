@@ -78,6 +78,18 @@
 /* Defaults for plain HTML elements. The `base` layer comes before Tailwind's utilities,
    so a class on an element always wins over these. */
 @layer base {
+  /* Every element fades its background and border colours over the same 150ms. Switching the
+     theme changes them all at once, so the whole page crossfades together: if only some elements
+     faded, they'd show the old theme's colours for a moment after the rest had switched. Hover
+     fades too. Text colour changes at once: it's inherited, and Chrome restarts a child's text
+     fade on every frame while its parent's fades, so nested text would lag far behind. Off for
+     people who ask for reduced motion. */
+  *,
+  ::before,
+  ::after {
+    @apply transition-[background-color,border-color] motion-reduce:transition-none;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
   }

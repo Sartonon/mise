@@ -6,7 +6,7 @@ import { ThemeToggle } from '~/components/ThemeToggle'
 // attribute screen readers read (Link adds aria-current="page" to it). It's filled and bold, so
 // it doesn't rely on colour alone.
 const navItem =
-  'inline-flex h-11 items-center rounded-full px-4 font-medium text-foreground no-underline transition-colors hover:bg-secondary hover:text-secondary-foreground motion-reduce:transition-none aria-[current=page]:bg-secondary aria-[current=page]:font-bold aria-[current=page]:text-secondary-foreground'
+  'inline-flex h-11 items-center rounded-full px-4 font-medium text-foreground no-underline hover:bg-secondary hover:text-secondary-foreground aria-[current=page]:bg-secondary aria-[current=page]:font-bold aria-[current=page]:text-secondary-foreground'
 
 export function Header() {
   return (
