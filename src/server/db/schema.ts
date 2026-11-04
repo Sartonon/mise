@@ -1,5 +1,13 @@
-import { sql } from 'drizzle-orm'
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { relations, sql } from 'drizzle-orm'
+import {
+  index,
+  integer,
+  primaryKey,
+  real,
+  sqliteTable,
+  text,
+  unique,
+} from 'drizzle-orm/sqlite-core'
 
 // Our tables, written in TypeScript. This file is the source of truth:
 // - drizzle-kit reads it to write the SQL migrations in `drizzle/` (`pnpm db:generate`)
@@ -24,6 +32,101 @@ export const recipes = sqliteTable('recipes', {
     .notNull()
     .default(sql`(unixepoch())`),
 })
+
+// The column every child table uses to point at its recipe: a foreign key. The database itself
+// refuses a row whose `recipe_id` isn't the id of a recipe, and `onDelete: 'cascade'` makes it
+// delete the children when their recipe is deleted. A function, so each table gets its own column.
+const recipeId = () =>
+  integer('recipe_id')
+    .notNull()
+    .references(() => recipes.id, { onDelete: 'cascade' })
+
+// One line of a recipe's ingredient list: "200 g red lentils".
+export const ingredients = sqliteTable(
+  'ingredients',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    recipeId: recipeId(),
+    // Rows in a table have no order, so the order of the list is stored: 0, 1, 2...
+    position: integer('position').notNull(),
+    // A number, not text, so it can be scaled (step 33) and added up (step 47). `real` is
+    // SQLite's floating-point type: 0.5 tsp works. Empty for "salt, to taste".
+    quantity: real('quantity'),
+    unit: text('unit'),
+    name: text('name').notNull(),
+  },
+  // The second argument adds constraints and indexes to the table. This one says no recipe
+  // has two ingredients at the same position. Like every unique constraint, it's also an index,
+  // so finding a recipe's ingredients (and deleting them in a cascade) doesn't read every row.
+  (table) => [unique().on(table.recipeId, table.position)],
+)
+
+// One step of the method: "Fry the onion until soft."
+export const steps = sqliteTable(
+  'steps',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    recipeId: recipeId(),
+    position: integer('position').notNull(),
+    text: text('text').notNull(),
+  },
+  (table) => [unique().on(table.recipeId, table.position)],
+)
+
+// A label shared by many recipes: "vegetarian", "quick".
+export const tags = sqliteTable('tags', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  // `.unique()`: there's only one "vegetarian" tag, which every vegetarian recipe links to.
+  name: text('name').notNull().unique(),
+})
+
+// A recipe has many tags and a tag has many recipes (many-to-many), so neither table can hold
+// the link: it gets a table of its own, one row per (recipe, tag) pair. A join table.
+export const recipeTags = sqliteTable(
+  'recipe_tags',
+  {
+    recipeId: recipeId(),
+    // Deleting a tag removes it from every recipe, and deleting a recipe removes its links;
+    // the other side (the recipe, the tag) stays.
+    tagId: integer('tag_id')
+      .notNull()
+      .references(() => tags.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    // The pair is the primary key, so the same tag can't be on a recipe twice. It also works
+    // as an index starting with `recipe_id` ("this recipe's tags").
+    primaryKey({ columns: [table.recipeId, table.tagId] }),
+    // ...but not for "this tag's recipes" (the tag filter, step 36), so that gets its own.
+    index('recipe_tags_tag_id_idx').on(table.tagId),
+  ],
+)
+
+// Relations tell Drizzle's query API (`db.query.recipes.findMany({ with: ... })`) how the tables
+// connect, so it can load a recipe together with its ingredients in one call. They're only for
+// TypeScript and Drizzle: they change nothing in the database (the foreign keys above do that),
+// and `db:generate` ignores them. `one` is the side that holds the foreign key; `many` the other.
+export const recipesRelations = relations(recipes, ({ many }) => ({
+  ingredients: many(ingredients),
+  steps: many(steps),
+  recipeTags: many(recipeTags),
+}))
+
+export const ingredientsRelations = relations(ingredients, ({ one }) => ({
+  recipe: one(recipes, { fields: [ingredients.recipeId], references: [recipes.id] }),
+}))
+
+export const stepsRelations = relations(steps, ({ one }) => ({
+  recipe: one(recipes, { fields: [steps.recipeId], references: [recipes.id] }),
+}))
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+  recipeTags: many(recipeTags),
+}))
+
+export const recipeTagsRelations = relations(recipeTags, ({ one }) => ({
+  recipe: one(recipes, { fields: [recipeTags.recipeId], references: [recipes.id] }),
+  tag: one(tags, { fields: [recipeTags.tagId], references: [tags.id] }),
+}))
 
 // The types of a row, worked out from the columns above.
 // `Recipe` is what a query returns; `NewRecipe` is what an insert takes, where the columns with

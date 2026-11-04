@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/libsql'
+import * as schema from './schema'
 
 // Server-only: it reads secrets from env vars. Only server code may import it.
 
@@ -28,8 +29,11 @@ export function databaseConfigFromEnv(
 }
 
 // Drizzle on top of libSQL's client. `drizzle()` opens the connection lazily, on the first query.
+// `schema` (every table and relation in schema.ts) is what gives `db.query.recipes` and friends.
+// libSQL turns on SQLite's foreign key checks for every connection; plain SQLite leaves them off
+// unless `PRAGMA foreign_keys = ON` is run, and then `onDelete: 'cascade'` would do nothing.
 export function createDb(config: DatabaseConfig) {
-  return drizzle({ connection: config })
+  return drizzle({ connection: config, schema })
 }
 
 // The type of a database handle. Plain functions will take a `db: Db` parameter, so the app
